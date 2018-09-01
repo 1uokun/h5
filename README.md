@@ -1,6 +1,6 @@
 # 基于HTML5造了一些轮子，库名暂定为ddH5 
  - 使用文档
- - 在线demo
+ - [在线demo](https://1uokun.github.io/h5/dist/index.html)
 
 ## 面向开发者
 本代码库使用`webpack`打包工具，将各个组件打包并压缩在一个命名为`dingdingH5.js`的文件中，并以`ddH5`为`library`名暴露给用户。
@@ -21,14 +21,14 @@ npm run build
 
 ## todo-list
 基础类库
- - [ ] [Scroll](https://1uokun.github.io/h5/src/base/scroll.js)
- - [ ] [Touch](https://1uokun.github.io/h5/src/base/touch.js)
- - [ ] [PageLife](https://1uokun.github.io/h5/src/base/pagelife.js)
+ - [ ] [Scroll](https://github.com/1uokun/h5/blob/master/src/base/scroll.js)
+ - [ ] [Touch](https://github.com/1uokun/h5/blob/master/src/base/touch.js)
+ - [ ] [PageLife](https://github.com/1uokun/h5/blob/master/src/base/pagelife.js)
  
 组件
- - [ ] [FlatLisrt](https://1uokun.github.io/h5/src/components/flatlist.js)
- - [ ] [Clusteriz](https://1uokun.github.io/h5/src/components/clusteriz.js)
- - [ ] [Swiper](https://1uokun.github.io/h5/src/components/swiper.js)
+ - [ ] [FlatLisrt](https://github.com/1uokun/h5/blob/master/src/components/flatlist.js)
+ - [ ] [Clusteriz](https://github.com/1uokun/h5/blob/master/src/components/clusterize.js)
+ - [ ] [Swiper](https://github.com/1uokun/h5/blob/master/src/components/swiper.js)
  - [ ] PullRefresh
     - [参考](http://www.alloyteam.com/author/tat-tennylv/)
     
