@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="">
+<head>
+    <meta charset="UTF-8">
+    <title>dingdingH5 - cli</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        img{
+            display: block;
+            margin:10px auto;
+        }
+        article{
+            padding:40px 80px;
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+<script type="text/javascript" src="./dingdingH5.js"></script>
+<article id="list">
+    <h1 style="position: fixed" id="title"></h1>
+    <img src="./ins/vice-logo-black.svg" data-img-src="./ins/0_small.jpg" data-big-img="0.jpg" alt="#世界在下沉，我们在狂欢">
+    2007年，我站在学校的操场上，身上穿着荆棘，下半身的长寿牛王裤裆快拖到地上，脚上的死亡之吻闪闪发光，
+    在大多数学生还以穿阿迪达斯和nike为王的时代，一身CLOT的我觉得我自己就是整个学校的潮流教父。
+    <img src="./ins/vice-logo-black.svg" data-img-src="./ins/1_small.jpg" data-big-img="1.jpg" alt="#世界在下沉，我们在狂欢">
+    然而，7年之后，陈冠希回来了。用一个纪录片的形式，在社交网络掀起一阵飓风。
+    VICE推出三集连播纪录片《触手可及》，一共一个多小时的短片，已经拥有超过1000万的点击量。
+    他还是那么屌的告诉你他的答案：如果可以回到过去，我什么都不改变。
+    <img src="./ins/vice-logo-black.svg" data-img-src="./ins/2_small.jpg" data-big-img="2.jpg" alt="#世界在下沉，我们在狂欢">
+
+    卑微的屌丝们羞愧的无地自容，只能流着泪说：看到你还是这么屌，我就放心了。
+    <img src="./ins/vice-logo-black.svg" data-img-src="./ins/3_small.jpg" data-big-img="3.jpg" alt="#世界在下沉，我们在狂欢">
+    7年之后再回来，一切都变了，陈冠希变老了，中国人不拍片子不用相机了，看片子也不用电脑了，中国人的性观念越来越开放，明星吸毒出轨一抓一大把，
+    陈冠希7年前犯天下之大不违的事儿好像不再是事儿了。7年前陈冠希说退出香港娱乐圈，indefinitely。7年后，他说“我是中国人，我的未来在中国。”
+    <img src="./ins/vice-logo-black.svg" data-img-src="./ins/4_small.jpg" data-big-img="4.jpg" alt="#世界在下沉，我们在狂欢">
+
+    事实上，陈冠希有他屌的资本，在世俗的偏见眼光之外，他有太多没有被看到的光芒：除了早已用无数作品证明的演技之外，他的音乐一直被低估。
+    <img src="./ins/vice-logo-black.svg" data-img-src="./ins/5_small.jpg" data-big-img="5.jpg" alt="#世界在下沉，我们在狂欢">
+
+    当年离开英皇娱乐之后，陈冠希一直在做自己喜欢的HIP HOP音乐，客观的说，近些年这些由他自己主导的专辑或EP
+    《confusion》、《三角度》、《几点》、《super brohers》均可算是中国hip hop音乐的顶尖之作。
+    陈冠希利用自己的人脉关系，合作的都是国内HIP HOP界的大牛，糅合多种音乐风格，无论是电子编曲还是纯HIP HOP音乐都令人赏心悦目。
+    <img src="./ins/vice-logo-black.svg" data-img-src="./ins/6_small.jpg" data-big-img="6.jpg" alt="#世界在下沉，我们在狂欢">
+    <img src="./ins/vice-logo-black.svg" data-img-src="./ins/7_small.jpg" data-big-img="7.jpg" alt="#世界在下沉，我们在狂欢">
+    文章内容cr [梦晓Syan](https://www.zhihu.com/question/37935143)
+    <br>
+    图片信息cr [ins-edcee3000](https://www.instagram.com/)
+</article>
+<script>
+    ddH5.Scroll({
+        content_elems:document.querySelectorAll('#list img'),
+        scroll_elem:list,
+        offset:[500,0,500,0],
+        scrollToTop:function(){
+            title.innerHTML = '到顶啦'
+            console.log('到顶啦')
+        },
+        scrollToBottom:function(){
+            title.innerHTML = '到底啦'
+            console.log('到底啦')
+        },
+        whenVisible:function(event,item){
+            if(item.src.indexOf('svg') !== -1){
+                item.src = item.dataset.imgSrc
+            }
+        }
+    })
+</script>
+</body>
+</html>

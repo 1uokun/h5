@@ -1,0 +1,25 @@
+{
+  "name": "dingdingh5",
+  "version": "1.0.0",
+  "description": "钉钉第三方开发H5UI库",
+  "main": "webpack.config.js",
+  "scripts": {
+    "build": "webpack --config webpack.config.js",
+    "start": "webpack-dev-server --open"
+  },
+  "keywords": [
+    "html5"
+  ],
+  "author": "1uokun.github.io",
+  "license": "ISC",
+  "devDependencies": {
+    "clean-webpack-plugin": "^0.1.19",
+    "html-webpack-plugin": "^3.2.0",
+    "ssr-window": "^1.0.1",
+    "webpack": "^4.17.1",
+    "webpack-cli": "^3.1.0",
+  },
+  "dependencies": {
+    "lodash": "^4.17.10"
+  }
+}
