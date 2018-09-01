@@ -1,6 +1,6 @@
 # 基于HTML5造了一些轮子，库名暂定为ddH5 
  - 使用文档
- - [在线demo](https://1uokun.github.io/h5/dist/index.html)
+ - [在线demo](https://1uokun.github.io/h5/dist/)
 
 ## 面向开发者
 本代码库使用`webpack`打包工具，将各个组件打包并压缩在一个命名为`dingdingH5.js`的文件中，并以`ddH5`为`library`名暴露给用户。
