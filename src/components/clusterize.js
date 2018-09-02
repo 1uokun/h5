@@ -72,3 +72,11 @@ export const clusterize = function({content_elem,scroll_elem,data,clusterize_scr
         }
     }.bind(this))
 }
+
+/**
+ * @other 其他相似组件
+ *
+ * new IntersectionObserver(callback, options)
+ * [使用Intersection Observer API构建无限滚动组件](https://www.w3cplus.com/vue/build-an-infinite-scroll-component-using-intersection-observer-api.html)
+ *
+ * **/

@@ -2,7 +2,7 @@ import Scroll from './scroll'
 class Touch {
     constructor(param){
         this.options = {
-            el : document.querySelector(param.el),
+            el : param.el,
             touchStart : param.touchStart,
             touchMove : param.touchMove,
             touchEnd : param.touchEnd
@@ -31,23 +31,9 @@ class Touch {
     }
 
     onTouchStart(e){
-        let coords = e.changedTouches.item(0)
-        this.state.y1 = coords.pageY
         return this.options.touchStart(e)
     }
     onTouchMove(e){
-        let coords = e.changedTouches.item(0)
-        console.log(coords.pageY)
-        // console.log(this.horizontalDirection({x1:coords.pageX,}))
-        new Scroll({
-            scroll_elem:'#list',
-            scrollToTop:function(){
-                this.state.y2 = coords.pageY
-                console.log(this.state.y1,this.state.y2)
-            }.bind(this),
-        })
-
-
         return this.options.touchMove(e)
 
     }

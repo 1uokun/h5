@@ -1,3 +1,4 @@
+import {debounce} from './util'
 export default class Scroll {
     constructor(param){
         this.options = {
@@ -47,37 +48,22 @@ export default class Scroll {
 
 
     // 派发滚动事件
-    dispatchEvent(type,event){
+    dispatchEvent(event){
         // console.log('getScrollTop',this.getScrollTop())
         // console.log('getScrollHeight',this.getScrollHeight())
         // console.log('getWindowHeight',this.getWindowHeight())
         // console.log(this.options.scroll_elem.clientHeight)
         /**
-         * @param type
-         *
-         * 判断当前监听的滚动element是指定el
-         * 还是window即document.body
-         *
-         *
-         * @model FSM
+         * @param state
          *
          * state & FSM 状态模式
          * finite-state machine 有限状态机缩写
          * 摘自 曾探.JavaScript设计模式与开发实践[M] p.224
-         *
-         *
-         * @warn 未完成
-         * webapp模式下无法监听到`滚动到底部`事件
          * **/
         let isOnTop = this.getScrollTop()<=0+this.options.offset[0],
-            isOnBottom = this.getScrollTop() + this.getWindowHeight() >= this.getScrollHeight() - this.options.offset[2];
+            isOnBottom = this.getScrollTop() + this.getWindowHeight() >= this.getScrollHeight() - this.options.offset[2] - 10;
 
-        if(this.options.scrollToBottom&&type === 'el') {
-            this.state.bottomState.bottomWasArrivaled.call(this,isOnBottom)
-        }else if(this.options.scrollToBottom&&type === 'window'){
-            this.state.bottomState.bottomWasArrivaled.call(this,isOnBottom)
-        }
-
+        this.options.scrollToBottom&&this.state.bottomState.bottomWasArrivaled.call(this,isOnBottom)
         this.options.scrollToTop&&this.state.topState.topWasArrivaled.call(this,isOnTop);
 
         this.init()
@@ -86,9 +72,9 @@ export default class Scroll {
     // 绑定事件
     bindEvent(){
         if(this.options.scroll_elem.scrollHeight>this.options.scroll_elem.clientHeight){
-            this.options.scroll_elem.addEventListener('scroll', this.dispatchEvent.bind(this,'el'))
+            this.options.scroll_elem.addEventListener('scroll', debounce(this.dispatchEvent.bind(this),100))
         }else {
-            window.addEventListener('scroll', this.dispatchEvent.bind(this,'window'))
+            window.addEventListener('scroll', debounce(this.dispatchEvent.bind(this),100))
         }
     }
 
@@ -135,4 +121,8 @@ let FSM = {
  *
  * 滚动到指定位置
  * [window.scrollTo()](https://developer.mozilla.org/en-US/docs/Web/API/Window/scrollTo)
+ *
+ * @polyfill IntersectionObserver
+ *
+ *
  * **/

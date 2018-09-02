@@ -24,6 +24,7 @@ npm run build
  - [ ] [Scroll](https://github.com/1uokun/h5/blob/master/src/base/scroll.js)
  - [ ] [Touch](https://github.com/1uokun/h5/blob/master/src/base/touch.js)
  - [ ] [PageLife](https://github.com/1uokun/h5/blob/master/src/base/pagelife.js)
+ - [ ] [Util](https://github.com/1uokun/h5/blob/master/src/base/util.js)
  
 组件
  - [ ] [FlatLisrt](https://github.com/1uokun/h5/blob/master/src/components/flatlist.js)
