@@ -1,7 +1,7 @@
 # 基于HTML5造了一些轮子，库名暂定为ddH5 
  - 使用文档
  - [基于Scroll组件的图片懒加载](https://1uokun.github.io/h5/dist/)
- - [基于Clusteriz.js思想的虚拟长列表](https://1uokun.github.io/h5/dist/components/clusteriz.html)
+ - [基于Clusterize.js思想的虚拟长列表](https://1uokun.github.io/h5/dist/components/clusterize.html)
  - [基于swiper.js思想的触摸版轮播](https://1uokun.github.io/h5/dist/components/swiper.html)
 
 ## 面向开发者
@@ -30,7 +30,7 @@ npm run build
  
 组件
  - [ ] FlatList
- - [ ] [Clusteriz](https://github.com/1uokun/h5/blob/master/src/components/clusterize.js)
+ - [ ] [Clusterize](https://github.com/1uokun/h5/blob/master/src/components/clusterize.js)
  - [ ] [Swiper](https://github.com/1uokun/h5/blob/master/src/components/swiper.js)
  - [ ] PullRefresh
     - [参考](http://www.alloyteam.com/author/tat-tennylv/)
