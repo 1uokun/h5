@@ -74,7 +74,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/
 /******/ 	var hotApplyOnUpdate = true;
 /******/ 	// eslint-disable-next-line no-unused-vars
-/******/ 	var hotCurrentHash = "14edc20d33a20ace9d7f";
+/******/ 	var hotCurrentHash = "f002335ff5cfb439b8c5";
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule;
@@ -804,164 +804,56 @@ return /******/ (function(modules) { // webpackBootstrap
 /************************************************************************/
 /******/ ({
 
-/***/ "./src/components/clusterize.js":
-/*!**************************************!*\
-  !*** ./src/components/clusterize.js ***!
-  \**************************************/
-/*! exports provided: clusterize */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "clusterize", function() { return clusterize; });
-const clusterize = function({content_elem,scroll_elem,data,clusterize_scroll}){
-    // 基本信息
-    this.options = {
-        content_elem : document.getElementById(content_elem),
-        scroll_elem : document.getElementById(scroll_elem),
-        item_height : 0,
-        top_height : 0,
-        bottom_height : 0,
-        _html : '',
-        density : 20,
-        clusterize_scroll:clusterize_scroll?clusterize_scroll:400,
-        start : null,
-        end : null,
-    };
-    // 闭包参数
-    var self = this.options,
-        cache = [],
-        show_no_data_row=[],
-        _change = 0
-
-    /**
-     * 通过控制<tbody>的头尾<tr>的高度来达到虚拟渲染
-     * 灵感来自https://clusterize.js.org/
-     * **/
-    // 渲染dom函数
-    this.render = function(show_no_data_row,cache,i){
-        self._html = ''
-        // firstChild 第一个tr的高度
-        self.top_height = self.item_height * cache.length
-
-        // lastChild 最后一个tr的高度
-        self.bottom_height = self.item_height * (data.length-cache.length-show_no_data_row.length)
-
-        // 中间的html内容
-        for(var i=0;i<show_no_data_row.length;i++){
-            self._html += show_no_data_row[i]
-        }
-        self.content_elem.innerHTML = self._html
-        self.content_elem.firstChild.style.height = self.top_height+'px'
-        self.content_elem.lastChild.style.height = self.bottom_height+'px'
-    }
-
-    //页面生命周期 - 加载阶段
-    document.addEventListener('DOMContentLoaded', function(){
-        // 在DOMContentLoaded阶段先获得item高度，以备后续计算密度
-        self.content_elem.innerHTML = aRows1[0]
-        self.item_height = self.content_elem.querySelector('td').offsetHeight
-        // 计算密度
-        self.density = parseInt(self.clusterize_scroll/(self.item_height-2))
-        self.top_height = 0
-        self.bottom_height = self.item_height * (data.length-self.density*2)
-        self.start = `<tr style="height:${self.top_height}px"></tr>`
-        self.end = `<tr style="height:${self.bottom_height}px"></tr>`
-
-    })
-
-    // 加载完成
-    window.onload = function(){
-        this.render(data.slice(0,self.density*2),cache,0)
-    }.bind(this)
-
-    // 监听滚动事件
-    self.scroll_elem.addEventListener('scroll', function(event){
-        var len = self.density;
-        var i = parseInt(event.srcElement.scrollTop/self.item_height/len)
-        // 滚动高度/（块高度*密度）取整 - 用于判断滚动到一半时启动渲染
-        if(_change!==i){
-            _change = i
-            cache = data.slice(0,len*i)
-            show_no_data_row = data.slice(len*i,len*(i+2))
-            this.render(show_no_data_row,cache,i)
-        }
-    }.bind(this))
-}
-
-/***/ }),
-
-/***/ "./src/components/flatlist.js":
-/*!************************************!*\
-  !*** ./src/components/flatlist.js ***!
-  \************************************/
+/***/ "./src/base/pagelife.js":
+/*!******************************!*\
+  !*** ./src/base/pagelife.js ***!
+  \******************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return FlatList; });
-class FlatList {
-    constructor(param){
-        this.state = {
-            ref:document.querySelector(param.ref),
-            data:typeof param.data === 'function'? param.data():param.data,
-            renderItem:param.renderItem,
-        }
-
-        this.render()
-    }
-
-    render(){
-        var _html = '',state = this.state
-        state.data.forEach(function(item,index){
-            _html+=state.renderItem(item,index)
-        })
-        state.ref.innerHTML = _html
-    }
-}
-
-/***/ }),
-
-/***/ "./src/components/page.js":
-/*!********************************!*\
-  !*** ./src/components/page.js ***!
-  \********************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Page; });
-class Page {
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Pagelife; });
+class Pagelife {
     constructor(param){
         this.options = {
             el : param.el,
-            DOMContentLoaded : param.willMount,
-            onload : param.didMount
+            DOMContentLoaded : param.DOMContentLoaded,
+            onload : param.onload
         }
         this.bindEvent()
     }
+    DOMContentLoaded(){
+        this.options.DOMContentLoaded&&this.options.DOMContentLoaded()
+
+    }
+    onload(){
+        this.options.onload&&this.options.onload()
+    }
+
 
     bindEvent(){
-        var opt = this.options
-        document.addEventListener('DOMContentLoaded', opt.DOMContentLoaded)
-        window.onload = opt.onload
+        document.addEventListener('DOMContentLoaded', this.DOMContentLoaded.bind(this))
+        window.onload = this.onload.bind(this)
     }
 }
 
 /***/ }),
 
-/***/ "./src/components/scroll.js":
-/*!**********************************!*\
-  !*** ./src/components/scroll.js ***!
-  \**********************************/
+/***/ "./src/base/scroll.js":
+/*!****************************!*\
+  !*** ./src/base/scroll.js ***!
+  \****************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Scroll; });
+/* harmony import */ var _util__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./util */ "./src/base/util.js");
+/* harmony import */ var _util__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_util__WEBPACK_IMPORTED_MODULE_0__);
+
+
 class Scroll {
     constructor(param){
         this.options = {
@@ -1011,37 +903,22 @@ class Scroll {
 
 
     // 派发滚动事件
-    dispatchEvent(type,event){
+    dispatchEvent(event){
         // console.log('getScrollTop',this.getScrollTop())
         // console.log('getScrollHeight',this.getScrollHeight())
         // console.log('getWindowHeight',this.getWindowHeight())
         // console.log(this.options.scroll_elem.clientHeight)
         /**
-         * @param type
-         *
-         * 判断当前监听的滚动element是指定el
-         * 还是window即document.body
-         *
-         *
-         * @model FSM
+         * @param state
          *
          * state & FSM 状态模式
          * finite-state machine 有限状态机缩写
          * 摘自 曾探.JavaScript设计模式与开发实践[M] p.224
-         *
-         *
-         * @warn 未完成
-         * webapp模式下无法监听到`滚动到底部`事件
          * **/
         let isOnTop = this.getScrollTop()<=0+this.options.offset[0],
-            isOnBottom = this.getScrollTop() + this.getWindowHeight() >= this.getScrollHeight() - this.options.offset[2];
+            isOnBottom = this.getScrollTop() + this.getWindowHeight() >= this.getScrollHeight() - this.options.offset[2] - 10;
 
-        if(this.options.scrollToBottom&&type === 'el') {
-            this.state.bottomState.bottomWasArrivaled.call(this,isOnBottom)
-        }else if(this.options.scrollToBottom&&type === 'window'){
-            this.state.bottomState.bottomWasArrivaled.call(this,isOnBottom)
-        }
-
+        this.options.scrollToBottom&&this.state.bottomState.bottomWasArrivaled.call(this,isOnBottom)
         this.options.scrollToTop&&this.state.topState.topWasArrivaled.call(this,isOnTop);
 
         this.init()
@@ -1050,9 +927,9 @@ class Scroll {
     // 绑定事件
     bindEvent(){
         if(this.options.scroll_elem.scrollHeight>this.options.scroll_elem.clientHeight){
-            this.options.scroll_elem.addEventListener('scroll', this.dispatchEvent.bind(this,'el'))
+            this.options.scroll_elem.addEventListener('scroll', Object(_util__WEBPACK_IMPORTED_MODULE_0__["debounce"])(this.dispatchEvent.bind(this),500))
         }else {
-            window.addEventListener('scroll', this.dispatchEvent.bind(this,'window'))
+            window.addEventListener('scroll', Object(_util__WEBPACK_IMPORTED_MODULE_0__["debounce"])(this.dispatchEvent.bind(this),500))
         }
     }
 
@@ -1095,11 +972,270 @@ let FSM = {
 };
 
 /**
- * @native 其他原生功能 - 暂不封装
+ * @native 其他原生功能 - 暂不封装或使用polyfill
  *
- * 滚动到指定位置
+ * 1.滚动到指定位置
  * [window.scrollTo()](https://developer.mozilla.org/en-US/docs/Web/API/Window/scrollTo)
+ *
+ *
+ * 2.粘性-根据滚动方向动态地定住元素
+ * 使用css新特性：postion:sticky
+ * 开源兼容库：https://github.com/filamentgroup/fixed-sticky
+ *
+ * 3.元素可见不可见判断 IntersectionObserver
+ * 开源兼容库 https://github.com/w3c/IntersectionObserver/tree/master/polyfill
+ *
+ * 4.Loren Brichter - Pull-to-Refresh交互技术创建者
  * **/
+
+/***/ }),
+
+/***/ "./src/base/touch.js":
+/*!***************************!*\
+  !*** ./src/base/touch.js ***!
+  \***************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Touch; });
+class Touch {
+    constructor(param){
+        this.options = {
+            el : param.el,
+            touchStart : param.touchStart,
+            touchMove : param.touchMove,
+            touchEnd : param.touchEnd
+        }
+        this.state = {
+            x1:0,
+            x2:0,
+            y1:0,
+            y2:0
+        }
+        this.bindEvent()
+    }
+
+    /**
+     * 判断移动的方向,结果是Left, Right, Up, Down中的一个
+     * @param  {} x1 起点的横坐标
+     * @param  {} x2 终点的横坐标
+     * @param  {} y1 起点的纵坐标
+     * @param  {} y2 终点的纵坐标
+     *
+     */
+    // Direction
+    horizontalDirection({x1, x2}){
+        return x1 - x2 > 0 ? 'Left' : x1 - x2 < 0 ? 'Right' : false
+    }
+
+    verticalDirection({y1, y2}) {
+        return y1 - y2 > 0 ? 'Up' : y1 - y2 < 0 ? 'Down' : false
+    }
+
+    direction({x1, x2, y1, y2}) {
+        return Math.abs(x1 - x2) >= Math.abs(y1 - y2) ?
+            (x1 - x2 > 0 ? 'Left' : 'Right') : (y1 - y2 > 0 ? 'Up' : 'Down')
+    }
+    //触摸时间
+    TapTime(last){
+        let endTime = performance.now()
+        return endTime - last
+    }
+
+
+    onTouchStart(e){
+        return this.options.touchStart(e)
+    }
+    onTouchMove(e){
+        return this.options.touchMove(e)
+
+    }
+    onTouchEnd(e){
+        return this.options.touchEnd(e)
+    }
+
+    bindEvent(){
+        this.options.el.addEventListener('touchstart',this.onTouchStart.bind(this))
+        this.options.el.addEventListener('touchmove',this.onTouchMove.bind(this))
+        this.options.el.addEventListener('touchend',this.onTouchEnd.bind(this))
+
+        //feature 添加鼠标事件
+        // this.options.el.addEventListener('mousedown',this.onTouchStart.bind(this))
+        // this.options.el.addEventListener('mousemove',this.onTouchMove.bind(this))
+        // this.options.el.addEventListener('mouseup',this.onTouchEnd.bind(this))
+    }
+}
+
+/***/ }),
+
+/***/ "./src/base/util.js":
+/*!**************************!*\
+  !*** ./src/base/util.js ***!
+  \**************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+// 节流 - https://github.com/mqyqingfeng/Blog/issues/26
+let throttle = function(action){
+    let isRunning = false;
+    return function(){
+        let context = this, args = arguments
+        if(isRunning) return;
+        isRunning = true;
+        window.requestAnimationFrame(()=>{
+            action.apply(context,args);
+            isRunning = false;
+        })
+    }
+};
+
+// 防抖 - https://github.com/mqyqingfeng/Blog/issues/22
+let debounce = function(func,wait){
+    let timeout;
+
+    return function(){
+        if(timeout){
+            clearTimeout(timeout)
+        }
+
+        let context = this,args = arguments;
+        timeout = setTimeout(function(){
+            func.apply(context, args)
+        },wait)
+    }
+};
+
+module.exports = {
+    throttle,
+    debounce
+};
+
+/***/ }),
+
+/***/ "./src/components/clusterize.js":
+/*!**************************************!*\
+  !*** ./src/components/clusterize.js ***!
+  \**************************************/
+/*! exports provided: clusterize */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "clusterize", function() { return clusterize; });
+const clusterize = function(param){
+    // 基本信息
+    this.options = {
+        content_elem : param.content_elem,
+        scroll_elem : param.scroll_elem,
+        item_height : 0,
+        top_height : 0,
+        bottom_height : 0,
+        _html : '',
+        density : 20,
+        clusterize_scroll:param.clusterize_scroll?param.clusterize_scroll:400,
+        renderItem:param.renderItem,
+        data:param.data
+    };
+    // 闭包参数
+    var self = this.options,
+        cache = [0],
+        show_no_data_row=[],
+        _change = 0
+
+    /**
+     * 通过控制<tbody>的头尾<tr>的高度来达到虚拟渲染
+     * 灵感来自https://clusterize.js.org/
+     * **/
+    // 渲染dom函数
+    this.render = function(show_no_data_row,cache){
+        self._html = ''
+        // firstChild 第一个tr的高度
+        self.top_height = self.item_height * cache.length
+
+        // lastChild 最后一个tr的高度
+        self.bottom_height = self.item_height * (self.data.length-cache.length-show_no_data_row.length)
+
+        // 中间的html内容
+        show_no_data_row.forEach(function(item,index){
+            self._html += self.renderItem(item,index)
+        })
+        self.content_elem.innerHTML = self._html
+        self.content_elem.firstChild.style.height = Math.max(self.item_height,self.top_height)+'px'
+        self.content_elem.lastChild.style.height = self.bottom_height+'px'
+    }
+
+    //页面生命周期 - 加载阶段
+    document.addEventListener('DOMContentLoaded', function(){
+        self.scroll_elem.style.maxHeight = self.clusterize_scroll+'px'
+        // 在DOMContentLoaded阶段先获得item高度，以备后续计算密度
+        self.content_elem.innerHTML = self.renderItem(aRows1[0],0)
+        self.item_height = self.content_elem.offsetHeight
+        // 计算密度
+        self.density = parseInt((self.clusterize_scroll + self.item_height*2)/(self.item_height-2))
+        self.top_height = 0
+        self.bottom_height = self.item_height * (self.data.length-self.density*2)
+    })
+
+    // 加载完成
+    window.onload = function(){
+        this.render(self.data.slice(0,self.density*2),cache,0)
+    }.bind(this)
+
+    // 监听滚动事件
+    self.scroll_elem.addEventListener('scroll', function(event){
+        var len = self.density;
+        var i = parseInt(event.srcElement.scrollTop/self.item_height/len)
+        // 滚动高度/（块高度*密度）取整 - 用于判断滚动到一半时启动渲染
+        if(_change!==i){
+            _change = i
+            cache = self.data.slice(0,len*i)
+            show_no_data_row = self.data.slice(len*i,len*(i+2))
+            this.render(show_no_data_row,cache,i)
+        }
+    }.bind(this))
+}
+
+/**
+ * @other 其他相似组件
+ *
+ * new IntersectionObserver(callback, options)
+ * [使用Intersection Observer API构建无限滚动组件](https://www.w3cplus.com/vue/build-an-infinite-scroll-component-using-intersection-observer-api.html)
+ *
+ * **/
+
+/***/ }),
+
+/***/ "./src/components/flatlist.js":
+/*!************************************!*\
+  !*** ./src/components/flatlist.js ***!
+  \************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return FlatList; });
+class FlatList {
+    constructor(param){
+        this.state = {
+            ref:document.querySelector(param.ref),
+            data:typeof param.data === 'function'? param.data():param.data,
+            renderItem:param.renderItem,
+        }
+
+        this.render()
+    }
+
+    render(){
+        var _html = '',state = this.state
+        state.data.forEach(function(item,index){
+            _html+=state.renderItem(item,index)
+        })
+        state.ref.innerHTML = _html
+    }
+}
 
 /***/ }),
 
@@ -1113,11 +1249,12 @@ let FSM = {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Swiper; });
-/* harmony import */ var _touch__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./touch */ "./src/components/touch.js");
+/* harmony import */ var _base_touch__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../base/touch */ "./src/base/touch.js");
 
 
-class Swiper{
-    constructor(el,obj){
+class Swiper extends _base_touch__WEBPACK_IMPORTED_MODULE_0__["default"]{
+    constructor(param){
+        super(param)
         this.options = {
             x1: 0,
             y1: 0,
@@ -1125,42 +1262,11 @@ class Swiper{
             y2: 0,
             _index: 0,
             last: 0,
-            el: document.querySelector(el),
-            slides: document.querySelector(el).querySelectorAll('.swiper-slide')
+            el: param.el,
+            slides: param.el.querySelectorAll('.swiper-slide')
         }
 
-        this.bindEvent()
         this.swiperActive()
-    }
-
-    /**
-     * 判断移动的方向,结果是Left, Right, Up, Down中的一个
-     * @param  {} x1 起点的横坐标
-     * @param  {} x2 终点的横坐标
-     * @param  {} y1 起点的纵坐标
-     * @param  {} y2 终点的纵坐标
-     *
-     * 这里直接使用touch类的horizontalDirection
-     */
-    swiperDirection({x1,x2,y1,y2}){
-        return x1 - x2 > 0 ? 'Left' : x1 - x2 < 0? 'Right' : false
-        // return Math.abs(x1-x2) >=
-        //         Math.abs(y1 - y2) ? (x1 - x2 > 0 ? 'Left' : 'Right') : (y1 - y2 > 0 ? 'Up' : 'Down')
-    }
-
-    /**
-     * 首先，判断触摸时间
-     * 1。短按 - 间隔时间300ms
-     *    这种情况直接判断滑动方向进行滚动
-     *
-     * 2。长按 - 间隔时间大于300ms
-     *    这种情况就需要判断滑动了多少距离 - 可自定义
-     *    一般为超过第二张的一半时滑动
-     *
-     * **/
-    TapTime(){
-        let endTime = performance.now()
-        return endTime - this.options.last
     }
 
     /**
@@ -1173,12 +1279,12 @@ class Swiper{
      *     触发滚动事件时设置事件为300ms，结束后设置回原来的0ms
      * **/
     swiperRender(i){
-        if(this.swiperDirection(this.options)=='Left'&&i<this.options.slides.length-1) {
+        if(this.horizontalDirection(this.options)==='Left'&&i<this.options.slides.length-1) {
             this.options.slides[i].classList.remove('swiper-slide-active')
             this.options.slides[i + 1].classList.add('swiper-slide-active')
             this.options._index += 1
             this.options.el.style.webkitTransform = `translate3d(-${this.options.el.offsetWidth * (i + 1)}px, 0px, 0px)`
-        }else if(this.swiperDirection(this.options)=='Right'&&i>=1){
+        }else if(this.horizontalDirection(this.options)==='Right'&&i>=1){
             this.options.slides[i].classList.remove('swiper-slide-active')
             this.options.slides[i - 1].classList.add('swiper-slide-active')
             this.options._index-=1
@@ -1201,36 +1307,43 @@ class Swiper{
         }
     }
 
-    bindEvent(){
+    onTouchStart(e){
+        let coords = e.changedTouches.item(0),opt = this.options;
+        opt.x1 = coords.pageX
+        opt.y1 = coords.pageY
+        opt.el.style.transitionDuration = '0ms'
+        opt.last = performance.now()
+    }
+    onTouchMove(e){
         let opt = this.options;
-        new _touch__WEBPACK_IMPORTED_MODULE_0__["default"]({
-            el:opt.el,
-            touchStart: function(e){
-                let coords = e.changedTouches.item(0)
-                opt.x1 = coords.pageX
-                opt.y1 = coords.pageY
-                opt.el.style.transitionDuration = '0ms'
-                opt.last = performance.now()
-            },
-            touchMove: function(e){
-                opt.el.style.webkitTransform = `translate3d(${
-                e.changedTouches.item(0).pageX
-                -opt.x1    // 位移距离
-                -opt.el.offsetWidth    // el宽度
-                *opt._index            // 当前屏幕显示的slide所在的索引
-                    }px, 0px, 0px)`
-            },
-            touchEnd: function(e){
-                let coords = e.changedTouches.item(0)
-                opt.x2 = coords.pageX
-                opt.y2 = coords.pageY
-                opt.el.style.transitionDuration = '300ms'
-                opt.el.style.webkitTransform = `translate3d(-${opt.el.offsetWidth*opt._index}px, 0px, 0px)`
-                if(Math.abs(opt.x2 - opt.x1) > opt.el.offsetWidth/2 || this.TapTime()<300){
-                    this.swiperRender(opt._index)
-                }
-            }.bind(this),
-        })
+        opt.el.style.webkitTransform = `translate3d(${
+        e.changedTouches.item(0).pageX
+        -opt.x1    // 位移距离
+        -opt.el.offsetWidth    // el宽度
+        *opt._index            // 当前屏幕显示的slide所在的索引
+            }px, 0px, 0px)`
+    }
+    onTouchEnd(e){
+        let coords = e.changedTouches.item(0),opt = this.options;
+        opt.x2 = coords.pageX;
+        opt.y2 = coords.pageY;
+        opt.el.style.transitionDuration = '300ms';
+        opt.el.style.webkitTransform = `translate3d(-${opt.el.offsetWidth*opt._index}px, 0px, 0px)`;
+        /**
+         * @param TapTime
+         *
+         * 首先，判断触摸时间
+         * 1。短按 - 间隔时间300ms
+         *    这种情况直接判断滑动方向进行滚动
+         *
+         * 2。长按 - 间隔时间大于300ms
+         *    这种情况就需要判断滑动了多少距离 - 可自定义
+         *    一般为超过第二张的一半时滑动
+         *
+         * **/
+        if(Math.abs(opt.x2 - opt.x1) > opt.el.offsetWidth/2 || this.TapTime(opt.last)<300){
+            this.swiperRender(opt._index)
+        }
     }
 }
 
@@ -1252,84 +1365,6 @@ class Swiper{
 
 /***/ }),
 
-/***/ "./src/components/touch.js":
-/*!*********************************!*\
-  !*** ./src/components/touch.js ***!
-  \*********************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _scroll__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./scroll */ "./src/components/scroll.js");
-
-class Touch {
-    constructor(param){
-        this.options = {
-            el : document.querySelector(param.el),
-            touchStart : param.touchStart,
-            touchMove : param.touchMove,
-            touchEnd : param.touchEnd
-        }
-        this.state = {
-            x1:0,
-            x2:0,
-            y1:0,
-            y2:0
-        }
-        this.bindEvent()
-    }
-
-    // Direction
-    horizontalDirection({x1, x2}){
-        return x1 - x2 > 0 ? 'Left' : x1 - x2 < 0 ? 'Right' : false
-    }
-
-    verticalDirection({y1, y2}) {
-        return y1 - y2 > 0 ? 'Up' : y1 - y2 < 0 ? 'Down' : false
-    }
-
-    direction({x1, x2, y1, y2}) {
-        return Math.abs(x1 - x2) >= Math.abs(y1 - y2) ?
-            (x1 - x2 > 0 ? 'Left' : 'Right') : (y1 - y2 > 0 ? 'Up' : 'Down')
-    }
-
-    onTouchStart(e){
-        let coords = e.changedTouches.item(0)
-        this.state.y1 = coords.pageY
-        return this.options.touchStart(e)
-    }
-    onTouchMove(e){
-        let coords = e.changedTouches.item(0)
-        console.log(coords.pageY)
-        // console.log(this.horizontalDirection({x1:coords.pageX,}))
-        new _scroll__WEBPACK_IMPORTED_MODULE_0__["default"]({
-            scroll_elem:'#list',
-            scrollToTop:function(){
-                this.state.y2 = coords.pageY
-                console.log(this.state.y1,this.state.y2)
-            }.bind(this),
-        })
-
-
-        return this.options.touchMove(e)
-
-    }
-    onTouchEnd(e){
-        return this.options.touchEnd(e)
-    }
-
-    bindEvent(){
-        this.options.el.addEventListener('touchstart',this.onTouchStart.bind(this))
-        this.options.el.addEventListener('touchmove',this.onTouchMove.bind(this))
-        this.options.el.addEventListener('touchend',this.onTouchEnd.bind(this))
-    }
-}
-
-/* harmony default export */ __webpack_exports__["default"] = (Touch);
-
-/***/ }),
-
 /***/ "./src/index.js":
 /*!**********************!*\
   !*** ./src/index.js ***!
@@ -1345,12 +1380,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "FlatList", function() { return FlatList; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Clusterize", function() { return Clusterize; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Scroll", function() { return Scroll; });
-/* harmony import */ var _components_swiper__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./components/swiper */ "./src/components/swiper.js");
-/* harmony import */ var _components_page__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./components/page */ "./src/components/page.js");
-/* harmony import */ var _components_touch__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./components/touch */ "./src/components/touch.js");
-/* harmony import */ var _components_flatlist__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./components/flatlist */ "./src/components/flatlist.js");
-/* harmony import */ var _components_clusterize__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./components/clusterize */ "./src/components/clusterize.js");
-/* harmony import */ var _components_scroll__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./components/scroll */ "./src/components/scroll.js");
+/* harmony import */ var _base_pagelife__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base/pagelife */ "./src/base/pagelife.js");
+/* harmony import */ var _base_touch__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./base/touch */ "./src/base/touch.js");
+/* harmony import */ var _base_scroll__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./base/scroll */ "./src/base/scroll.js");
+/* harmony import */ var _components_swiper__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./components/swiper */ "./src/components/swiper.js");
+/* harmony import */ var _components_flatlist__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./components/flatlist */ "./src/components/flatlist.js");
+/* harmony import */ var _components_clusterize__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./components/clusterize */ "./src/components/clusterize.js");
 
 
 
@@ -1358,12 +1393,14 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-const Swiper = function(obj){return new _components_swiper__WEBPACK_IMPORTED_MODULE_0__["default"](obj)};
-const Page = function(obj){return new _components_page__WEBPACK_IMPORTED_MODULE_1__["default"](obj)};
-const Touch = function(obj){return new _components_touch__WEBPACK_IMPORTED_MODULE_2__["default"](obj)};
-const FlatList = function(obj){return new _components_flatlist__WEBPACK_IMPORTED_MODULE_3__["default"](obj)};
-const Clusterize = function(obj){return new _components_clusterize__WEBPACK_IMPORTED_MODULE_4__["clusterize"](obj)};
-const Scroll = function(obj){return new _components_scroll__WEBPACK_IMPORTED_MODULE_5__["default"](obj)};
+
+
+const Swiper = function(obj){return new _components_swiper__WEBPACK_IMPORTED_MODULE_3__["default"](obj)};
+const Page = function(obj){return new _base_pagelife__WEBPACK_IMPORTED_MODULE_0__["default"](obj)};
+const Touch = function(obj){return new _base_touch__WEBPACK_IMPORTED_MODULE_1__["default"](obj)};
+const FlatList = function(obj){return new _components_flatlist__WEBPACK_IMPORTED_MODULE_4__["default"](obj)};
+const Clusterize = function(obj){return new _components_clusterize__WEBPACK_IMPORTED_MODULE_5__["clusterize"](obj)};
+const Scroll = function(obj){return new _base_scroll__WEBPACK_IMPORTED_MODULE_2__["default"](obj)};
 
 
 
