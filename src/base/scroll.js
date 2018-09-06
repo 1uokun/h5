@@ -1,4 +1,5 @@
 import {debounce} from './util'
+
 export default class Scroll {
     constructor(param){
         this.options = {
@@ -72,9 +73,9 @@ export default class Scroll {
     // 绑定事件
     bindEvent(){
         if(this.options.scroll_elem.scrollHeight>this.options.scroll_elem.clientHeight){
-            this.options.scroll_elem.addEventListener('scroll', debounce(this.dispatchEvent.bind(this),100))
+            this.options.scroll_elem.addEventListener('scroll', debounce(this.dispatchEvent.bind(this),500))
         }else {
-            window.addEventListener('scroll', debounce(this.dispatchEvent.bind(this),100))
+            window.addEventListener('scroll', debounce(this.dispatchEvent.bind(this),500))
         }
     }
 
@@ -117,12 +118,18 @@ let FSM = {
 };
 
 /**
- * @native 其他原生功能 - 暂不封装
+ * @native 其他原生功能 - 暂不封装或使用polyfill
  *
- * 滚动到指定位置
+ * 1.滚动到指定位置
  * [window.scrollTo()](https://developer.mozilla.org/en-US/docs/Web/API/Window/scrollTo)
  *
- * @polyfill IntersectionObserver
  *
+ * 2.粘性-根据滚动方向动态地定住元素
+ * 使用css新特性：postion:sticky
+ * 开源兼容库：https://github.com/filamentgroup/fixed-sticky
  *
+ * 3.元素可见不可见判断 IntersectionObserver
+ * 开源兼容库 https://github.com/w3c/IntersectionObserver/tree/master/polyfill
+ *
+ * 4.Loren Brichter - Pull-to-Refresh交互技术创建者
  * **/

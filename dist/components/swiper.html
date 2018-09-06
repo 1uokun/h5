@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Swiper</title>
+    <link rel="stylesheet" href="../styles.css">
+    <style>
+        .swiper-slide{
+            text-align: center;
+            line-height: 500px;
+            font-size: 28px;
+        }
+    </style>
+</head>
+<body>
+<div class="swiper-container">
+    <div class="swiper-wrapper">
+        <div class="swiper-slide" style="background-color: #b3c9ce">slider1</div>
+        <div class="swiper-slide" style="background-color: #E8C48F">slider2</div>
+        <div class="swiper-slide" style="background-color: aquamarine">slider3</div>
+        <div class="swiper-slide" style="background-color: cornflowerblue">slider4</div>
+    </div>
+</div>
+<script type="text/javascript" src="../dingdingH5.js"></script>
+<script>
+    ddH5.Swiper({
+        el:document.querySelector('.swiper-wrapper')
+    })
+</script>
+</body>
+</html>

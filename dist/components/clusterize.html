@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>clusterize</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+<script type="text/javascript" src="../dingdingH5.js"></script>
+<div class="clusterize">
+    <div id="scrollArea" class="clusterize-scroll">
+        <table>
+            <tbody id="contentArea" class="clusterize-content">
+            </tbody>
+        </table>
+    </div>
+</div>
+<script>
+    var aRows1 = [];
+    for (var i=1; i<5001; ++i) {
+        aRows1.push(i);
+    }
+    ddH5.Clusterize({
+        data:aRows1,
+        renderItem:function(item,i){
+            return `<tr style="height:50px;" key="${i}">
+                        <td>
+                            <div style="height:50px;width: ${item/50}%;background-color: pink">${item}</div>
+                        </td>
+                    </tr>`
+        },
+        content_elem:document.getElementById('contentArea'),
+        scroll_elem:document.getElementById('scrollArea'),
+        clusterize_scroll:800
+    })
+</script>
+</body>
+</html>

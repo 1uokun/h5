@@ -1,7 +1,8 @@
 import Touch from '../base/touch'
 
-export default class Swiper{
-    constructor(el,obj){
+export default class Swiper extends Touch{
+    constructor(param){
+        super(param)
         this.options = {
             x1: 0,
             y1: 0,
@@ -9,42 +10,11 @@ export default class Swiper{
             y2: 0,
             _index: 0,
             last: 0,
-            el: document.querySelector(el),
-            slides: document.querySelector(el).querySelectorAll('.swiper-slide')
+            el: param.el,
+            slides: param.el.querySelectorAll('.swiper-slide')
         }
 
-        this.bindEvent()
         this.swiperActive()
-    }
-
-    /**
-     * 判断移动的方向,结果是Left, Right, Up, Down中的一个
-     * @param  {} x1 起点的横坐标
-     * @param  {} x2 终点的横坐标
-     * @param  {} y1 起点的纵坐标
-     * @param  {} y2 终点的纵坐标
-     *
-     * 这里直接使用touch类的horizontalDirection
-     */
-    swiperDirection({x1,x2,y1,y2}){
-        return x1 - x2 > 0 ? 'Left' : x1 - x2 < 0? 'Right' : false
-        // return Math.abs(x1-x2) >=
-        //         Math.abs(y1 - y2) ? (x1 - x2 > 0 ? 'Left' : 'Right') : (y1 - y2 > 0 ? 'Up' : 'Down')
-    }
-
-    /**
-     * 首先，判断触摸时间
-     * 1。短按 - 间隔时间300ms
-     *    这种情况直接判断滑动方向进行滚动
-     *
-     * 2。长按 - 间隔时间大于300ms
-     *    这种情况就需要判断滑动了多少距离 - 可自定义
-     *    一般为超过第二张的一半时滑动
-     *
-     * **/
-    TapTime(){
-        let endTime = performance.now()
-        return endTime - this.options.last
     }
 
     /**
@@ -57,12 +27,12 @@ export default class Swiper{
      *     触发滚动事件时设置事件为300ms，结束后设置回原来的0ms
      * **/
     swiperRender(i){
-        if(this.swiperDirection(this.options)=='Left'&&i<this.options.slides.length-1) {
+        if(this.horizontalDirection(this.options)==='Left'&&i<this.options.slides.length-1) {
             this.options.slides[i].classList.remove('swiper-slide-active')
             this.options.slides[i + 1].classList.add('swiper-slide-active')
             this.options._index += 1
             this.options.el.style.webkitTransform = `translate3d(-${this.options.el.offsetWidth * (i + 1)}px, 0px, 0px)`
-        }else if(this.swiperDirection(this.options)=='Right'&&i>=1){
+        }else if(this.horizontalDirection(this.options)==='Right'&&i>=1){
             this.options.slides[i].classList.remove('swiper-slide-active')
             this.options.slides[i - 1].classList.add('swiper-slide-active')
             this.options._index-=1
@@ -85,36 +55,43 @@ export default class Swiper{
         }
     }
 
-    bindEvent(){
+    onTouchStart(e){
+        let coords = e.changedTouches.item(0),opt = this.options;
+        opt.x1 = coords.pageX
+        opt.y1 = coords.pageY
+        opt.el.style.transitionDuration = '0ms'
+        opt.last = performance.now()
+    }
+    onTouchMove(e){
         let opt = this.options;
-        new Touch({
-            el:opt.el,
-            touchStart: function(e){
-                let coords = e.changedTouches.item(0)
-                opt.x1 = coords.pageX
-                opt.y1 = coords.pageY
-                opt.el.style.transitionDuration = '0ms'
-                opt.last = performance.now()
-            },
-            touchMove: function(e){
-                opt.el.style.webkitTransform = `translate3d(${
-                e.changedTouches.item(0).pageX
-                -opt.x1    // 位移距离
-                -opt.el.offsetWidth    // el宽度
-                *opt._index            // 当前屏幕显示的slide所在的索引
-                    }px, 0px, 0px)`
-            },
-            touchEnd: function(e){
-                let coords = e.changedTouches.item(0)
-                opt.x2 = coords.pageX
-                opt.y2 = coords.pageY
-                opt.el.style.transitionDuration = '300ms'
-                opt.el.style.webkitTransform = `translate3d(-${opt.el.offsetWidth*opt._index}px, 0px, 0px)`
-                if(Math.abs(opt.x2 - opt.x1) > opt.el.offsetWidth/2 || this.TapTime()<300){
-                    this.swiperRender(opt._index)
-                }
-            }.bind(this),
-        })
+        opt.el.style.webkitTransform = `translate3d(${
+        e.changedTouches.item(0).pageX
+        -opt.x1    // 位移距离
+        -opt.el.offsetWidth    // el宽度
+        *opt._index            // 当前屏幕显示的slide所在的索引
+            }px, 0px, 0px)`
+    }
+    onTouchEnd(e){
+        let coords = e.changedTouches.item(0),opt = this.options;
+        opt.x2 = coords.pageX;
+        opt.y2 = coords.pageY;
+        opt.el.style.transitionDuration = '300ms';
+        opt.el.style.webkitTransform = `translate3d(-${opt.el.offsetWidth*opt._index}px, 0px, 0px)`;
+        /**
+         * @param TapTime
+         *
+         * 首先，判断触摸时间
+         * 1。短按 - 间隔时间300ms
+         *    这种情况直接判断滑动方向进行滚动
+         *
+         * 2。长按 - 间隔时间大于300ms
+         *    这种情况就需要判断滑动了多少距离 - 可自定义
+         *    一般为超过第二张的一半时滑动
+         *
+         * **/
+        if(Math.abs(opt.x2 - opt.x1) > opt.el.offsetWidth/2 || this.TapTime(opt.last)<300){
+            this.swiperRender(opt._index)
+        }
     }
 }
 
