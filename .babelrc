@@ -1,1 +1,9 @@
-{ "presets": [ "es2015" ] }
+{
+  "presets": [
+    "@babel/preset-env"
+  ],
+  "plugins": [
+    ["@babel/plugin-syntax-decorators", { "legacy": true }],
+    ["@babel/plugin-proposal-decorators", { "legacy": true }]
+  ]
+}
