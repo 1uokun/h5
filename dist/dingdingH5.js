@@ -74,7 +74,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/
 /******/ 	var hotApplyOnUpdate = true;
 /******/ 	// eslint-disable-next-line no-unused-vars
-/******/ 	var hotCurrentHash = "6a8d2bbb215cc95ecbb8";
+/******/ 	var hotCurrentHash = "8d6e980f24ef78a59f1e";
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule;
@@ -1308,6 +1308,8 @@ function () {
     };
     this.eles = ['input', 'textarea', 'select'];
     this.isDirty = false;
+    this.history = ["clean", "clean"]; //Keep track of last statuses
+
     this.nodes = [];
     this.init();
   }
@@ -1360,28 +1362,56 @@ function () {
     value: function checkValues() {
       var nodes = this.nodes,
           self = this;
+      var isDirty = false;
 
       for (var i = 0, node; node = nodes[i++];) {
         if (node.getAttribute('data-is-dirrty') === 'true') {
-          self.setDirty();
-          return false;
+          isDirty = true;
         }
+      }
 
+      if (isDirty) {
+        self.setDirty();
+      } else {
         self.setClean();
-        return false;
+      }
+
+      this.fireEvents();
+    }
+  }, {
+    key: "fireEvents",
+    value: function fireEvents() {
+      if (this.isDirty && this.wasJustClean()) {
+        this.options.onDirty();
+      }
+
+      if (!this.isDirty && this.wasJustDirty()) {
+        this.options.onClean();
       }
     }
   }, {
     key: "setDirty",
     value: function setDirty() {
-      !this.isDirty && this.options.onDirty.call(this);
       this.isDirty = true;
+      this.history[0] = this.history[1];
+      this.history[1] = "dirty";
     }
   }, {
     key: "setClean",
     value: function setClean() {
-      this.isDirty && this.options.onClean.call(this);
       this.isDirty = false;
+      this.history[0] = this.history[1];
+      this.history[1] = "clean";
+    }
+  }, {
+    key: "wasJustDirty",
+    value: function wasJustDirty() {
+      return this.history[0] === "dirty";
+    }
+  }, {
+    key: "wasJustClean",
+    value: function wasJustClean() {
+      return this.history[0] === "clean";
     }
   }]);
 

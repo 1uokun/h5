@@ -12,6 +12,7 @@ export default class Dirty{
             'select',
         ];
         this.isDirty=false;
+        this.history = ["clean", "clean"]; //Keep track of last statuses
 
         this.nodes = []
         this.init()
@@ -53,24 +54,47 @@ export default class Dirty{
 
     checkValues(){
         let nodes = this.nodes,self = this;
+        let isDirty = false;
         for(let i=0,node;node = nodes[i++];){
             if(node.getAttribute('data-is-dirrty')==='true'){
-                self.setDirty()
-                return false
+                isDirty = true
             }
-            self.setClean()
-            return false
+        }
+        if(isDirty){
+            self.setDirty();
+        }else{
+            self.setClean();
+        }
+
+        this.fireEvents()
+    }
+    fireEvents(){
+        if(this.isDirty && this.wasJustClean()){
+            this.options.onDirty()
+        }
+
+        if(!this.isDirty && this.wasJustDirty()){
+            this.options.onClean()
         }
     }
-
     setDirty(){
-        !this.isDirty&&this.options.onDirty.call(this)
         this.isDirty = true;
+        this.history[0] = this.history[1];
+        this.history[1] = "dirty";
     }
 
     setClean(){
-        this.isDirty&&this.options.onClean.call(this)
         this.isDirty = false;
+        this.history[0] = this.history[1];
+        this.history[1] = "clean";
+    }
+
+    wasJustDirty(){
+        return (this.history[0] === "dirty");
+    }
+
+    wasJustClean(){
+        return (this.history[0] === "clean");
     }
 
 }
