@@ -3,6 +3,7 @@
  - [基于Scroll组件的图片懒加载](https://1uokun.github.io/h5/dist/)
  - [基于Clusterize.js思想的虚拟长列表](https://1uokun.github.io/h5/dist/components/clusterize.html)
  - [基于swiper.js思想的触摸版轮播](https://1uokun.github.io/h5/dist/components/swiper.html)
+ - [脏值检测简单应用 - 表单提交](https://1uokun.github.io/h5/dist/components/dirty-checking.html)
 
 ## 面向开发者
 本代码库使用`webpack`打包工具，将各个组件打包并压缩在一个命名为`dingdingH5.js`的文件中，并以`ddH5`为`library`名暴露给用户。
@@ -32,6 +33,7 @@ npm run build
  - [ ] FlatList
  - [ ] [Clusterize](https://github.com/1uokun/h5/blob/master/src/components/clusterize.js)
  - [ ] [Swiper](https://github.com/1uokun/h5/blob/master/src/components/swiper.js)
+ - [ ] [Dirty-Checking](https://github.com/1uokun/h5/blob/master/src/components/dirtycheck.js)
  - [ ] PullRefresh
     - [参考](http://www.alloyteam.com/author/tat-tennylv/)
     

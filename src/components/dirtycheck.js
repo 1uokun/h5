@@ -1,4 +1,4 @@
-export class Dirrty{
+export default class Dirty{
     constructor(obj){
         this.options = {
             el:obj.el,
@@ -52,8 +52,8 @@ export class Dirrty{
     }
 
     checkValues(){
-        var nodes = this.nodes,self = this
-        for(var i=0,node;node = nodes[i++];){
+        let nodes = this.nodes,self = this;
+        for(let i=0,node;node = nodes[i++];){
             if(node.getAttribute('data-is-dirrty')==='true'){
                 self.setDirty()
                 return false
@@ -74,3 +74,10 @@ export class Dirrty{
     }
 
 }
+
+/**
+ *
+ * 本库思想来自
+ * jQuery版本 https://github.com/rubentd/dirrty
+ *
+ * **/

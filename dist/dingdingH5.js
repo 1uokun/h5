@@ -74,7 +74,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/
 /******/ 	var hotApplyOnUpdate = true;
 /******/ 	// eslint-disable-next-line no-unused-vars
-/******/ 	var hotCurrentHash = "8830227f8c1997a0ad4a";
+/******/ 	var hotCurrentHash = "6a8d2bbb215cc95ecbb8";
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule;
@@ -1271,6 +1271,134 @@ var clusterize = function clusterize(param) {
 
 /***/ }),
 
+/***/ "./src/components/dirtycheck.js":
+/*!**************************************!*\
+  !*** ./src/components/dirtycheck.js ***!
+  \**************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Dirty; });
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
+
+function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var Dirty =
+/*#__PURE__*/
+function () {
+  function Dirty(obj) {
+    _classCallCheck(this, Dirty);
+
+    this.options = {
+      el: obj.el,
+      onDirty: obj.onDirty,
+      onClean: obj.onClean
+    };
+    this.eles = ['input', 'textarea', 'select'];
+    this.isDirty = false;
+    this.nodes = [];
+    this.init();
+  }
+
+  _createClass(Dirty, [{
+    key: "init",
+    value: function init() {
+      var self = this;
+
+      for (var i = 0; i < self.eles.length; i++) {
+        var _self$nodes;
+
+        (_self$nodes = self.nodes).push.apply(_self$nodes, _toConsumableArray(self.options.el.querySelectorAll(self.eles[i])));
+      }
+
+      for (var _i = 0, node; node = self.nodes[_i++];) {
+        self.saveInitialValues(node);
+      }
+
+      self.setEvents();
+    }
+  }, {
+    key: "saveInitialValues",
+    value: function saveInitialValues(node) {
+      if (node.getAttribute('type') === 'checkbox' || node.getAttribute('type') === 'radio') {
+        node.setAttribute('data-dirrty-initial-value', node.checked);
+      } else {
+        node.setAttribute('data-dirrty-initial-value', node.value);
+      }
+    }
+  }, {
+    key: "setEvents",
+    value: function setEvents() {
+      var self = this;
+      self.options.el.addEventListener('input', function (e) {
+        var _value;
+
+        if (e.target.getAttribute('type') === 'checkbox' || e.target.getAttribute('type') === 'radio') {
+          _value = e.target.checked;
+        } else {
+          _value = e.target.value;
+        }
+
+        e.target.setAttribute('data-is-dirrty', _value !== e.target.getAttribute('data-dirrty-initial-value'));
+        self.checkValues();
+      });
+    }
+  }, {
+    key: "checkValues",
+    value: function checkValues() {
+      var nodes = this.nodes,
+          self = this;
+
+      for (var i = 0, node; node = nodes[i++];) {
+        if (node.getAttribute('data-is-dirrty') === 'true') {
+          self.setDirty();
+          return false;
+        }
+
+        self.setClean();
+        return false;
+      }
+    }
+  }, {
+    key: "setDirty",
+    value: function setDirty() {
+      !this.isDirty && this.options.onDirty.call(this);
+      this.isDirty = true;
+    }
+  }, {
+    key: "setClean",
+    value: function setClean() {
+      this.isDirty && this.options.onClean.call(this);
+      this.isDirty = false;
+    }
+  }]);
+
+  return Dirty;
+}();
+/**
+ *
+ * 本库思想来自
+ * jQuery版本 https://github.com/rubentd/dirrty
+ *
+ * **/
+
+
+
+
+/***/ }),
+
 /***/ "./src/components/flatlist.js":
 /*!************************************!*\
   !*** ./src/components/flatlist.js ***!
@@ -1493,7 +1621,7 @@ function (_Touch) {
 /*!**********************!*\
   !*** ./src/index.js ***!
   \**********************/
-/*! exports provided: Swiper, Page, Touch, FlatList, Clusterize, Scroll */
+/*! exports provided: Swiper, Page, Touch, FlatList, Clusterize, Scroll, Dirty */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -1504,12 +1632,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "FlatList", function() { return FlatList; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Clusterize", function() { return Clusterize; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Scroll", function() { return Scroll; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Dirty", function() { return Dirty; });
 /* harmony import */ var _base_pagelife__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base/pagelife */ "./src/base/pagelife.js");
 /* harmony import */ var _base_touch__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./base/touch */ "./src/base/touch.js");
 /* harmony import */ var _base_scroll__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./base/scroll */ "./src/base/scroll.js");
 /* harmony import */ var _components_swiper__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./components/swiper */ "./src/components/swiper.js");
 /* harmony import */ var _components_flatlist__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./components/flatlist */ "./src/components/flatlist.js");
-/* harmony import */ var _components_clusterize__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./components/clusterize */ "./src/components/clusterize.js");
+/* harmony import */ var _components_dirtycheck_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./components/dirtycheck.js */ "./src/components/dirtycheck.js");
+/* harmony import */ var _components_clusterize__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./components/clusterize */ "./src/components/clusterize.js");
+
 
 
 
@@ -1534,11 +1665,15 @@ var FlatList = function FlatList(obj) {
 };
 
 var Clusterize = function Clusterize(obj) {
-  return new _components_clusterize__WEBPACK_IMPORTED_MODULE_5__["clusterize"](obj);
+  return new _components_clusterize__WEBPACK_IMPORTED_MODULE_6__["clusterize"](obj);
 };
 
 var Scroll = function Scroll(obj) {
   return new _base_scroll__WEBPACK_IMPORTED_MODULE_2__["default"](obj);
+};
+
+var Dirty = function Dirty(obj) {
+  return new _components_dirtycheck_js__WEBPACK_IMPORTED_MODULE_5__["default"](obj);
 };
 
 

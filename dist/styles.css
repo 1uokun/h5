@@ -68,3 +68,7 @@ select{
 textarea{
     width:200px;
 }
+button{
+    width:200px;
+    height:40px;
+}
