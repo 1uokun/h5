@@ -74,7 +74,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/
 /******/ 	var hotApplyOnUpdate = true;
 /******/ 	// eslint-disable-next-line no-unused-vars
-/******/ 	var hotCurrentHash = "7085cc863f3f05cb7c68";
+/******/ 	var hotCurrentHash = "b59d418dc1542616962a";
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule;
@@ -829,7 +829,8 @@ function () {
     this.options = {
       el: param.el,
       DOMContentLoaded: param.DOMContentLoaded,
-      onload: param.onload
+      onload: param.onload,
+      defaultLoading: param.defaultLoading
     };
     this.bindEvent();
   }
@@ -843,12 +844,30 @@ function () {
     key: "onload",
     value: function onload() {
       this.options.onload && this.options.onload();
+      this.options.defaultLoading && this.cleanLoading();
     }
   }, {
     key: "bindEvent",
     value: function bindEvent() {
       document.addEventListener('DOMContentLoaded', this.DOMContentLoaded.bind(this));
       window.onload = this.onload.bind(this);
+      this.options.defaultLoading && this.defaultLoading();
+    } //默认一个加载样式
+
+  }, {
+    key: "defaultLoading",
+    value: function defaultLoading() {
+      document.body.style.overflow = 'hidden';
+      var footer = document.createElement('div');
+      footer.className = 'lds-default-footer';
+      footer.innerHTML = '   <div class="lds-default">' + '        <div></div>' + '        <div></div>' + '        <div></div>' + '        <div></div>' + '        <div></div>' + '        <div></div>' + '        <div></div>' + '        <div></div>' + '        <div></div>' + '        <div></div>' + '        <div></div>' + '        <div></div>' + '    </div>';
+      document.body.appendChild(footer);
+    }
+  }, {
+    key: "cleanLoading",
+    value: function cleanLoading() {
+      document.querySelector('.lds-default-footer').style.display = 'none';
+      document.body.style.overflow = 'auto';
     }
   }]);
 
@@ -960,9 +979,9 @@ function () {
     key: "bindEvent",
     value: function bindEvent() {
       if (this.options.scroll_elem.scrollHeight > this.options.scroll_elem.clientHeight) {
-        this.options.scroll_elem.addEventListener('scroll', Object(_util__WEBPACK_IMPORTED_MODULE_0__["debounce"])(this.dispatchEvent.bind(this), 500));
+        this.options.scroll_elem.addEventListener('scroll', Object(_util__WEBPACK_IMPORTED_MODULE_0__["throttle"])(this.dispatchEvent.bind(this)));
       } else {
-        window.addEventListener('scroll', Object(_util__WEBPACK_IMPORTED_MODULE_0__["debounce"])(this.dispatchEvent.bind(this), 500));
+        window.addEventListener('scroll', Object(_util__WEBPACK_IMPORTED_MODULE_0__["throttle"])(this.dispatchEvent.bind(this)));
       }
     } // 初始化
 

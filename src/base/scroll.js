@@ -1,4 +1,4 @@
-import {debounce} from './util'
+import {throttle} from './util'
 
 export default class Scroll {
     constructor(param){
@@ -73,9 +73,9 @@ export default class Scroll {
     // 绑定事件
     bindEvent(){
         if(this.options.scroll_elem.scrollHeight>this.options.scroll_elem.clientHeight){
-            this.options.scroll_elem.addEventListener('scroll', debounce(this.dispatchEvent.bind(this),500))
+            this.options.scroll_elem.addEventListener('scroll', throttle(this.dispatchEvent.bind(this)))
         }else {
-            window.addEventListener('scroll', debounce(this.dispatchEvent.bind(this),500))
+            window.addEventListener('scroll', throttle(this.dispatchEvent.bind(this)))
         }
     }
 

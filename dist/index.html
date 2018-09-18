@@ -47,9 +47,13 @@
     图片信息cr [ins-edcee3000](https://www.instagram.com/)
 </article>
 <script>
+    ddH5.Page({
+        defaultLoading:true
+    });
+
     ddH5.Scroll({
         content_elems:document.querySelectorAll('#list img'),
-        scroll_elem:list,
+        scroll_elem:document.getElementById('list'),
         offset:[500,0,500,0],
         scrollToTop:function(){
             title.innerHTML = '到顶啦'
@@ -65,6 +69,8 @@
             }
         }
     })
+
+
 </script>
 </body>
 </html>
