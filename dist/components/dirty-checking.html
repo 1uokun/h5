@@ -25,18 +25,19 @@
     <br>
     <textarea cols="30" rows="10" class="dd-textarea"></textarea>
     <br>
-    <button class="dd-btn-submit">Submit</button>
+    <button class="dd-btn-submit" disabled>Submit</button>
 </from>
 <script>
     ddH5.Dirty({
         el:document.getElementById('my_form'),
         onClean:function(){
             console.log('i am clean')
-            document.querySelector('.dd-btn-submit').removeAttribute('disabled')
+            document.querySelector('.dd-btn-submit').setAttribute('disabled',true)
         },
         onDirty:function(){
             console.log('i am dirty')
-            document.querySelector('.dd-btn-submit').setAttribute('disabled',true)
+            document.querySelector('.dd-btn-submit').removeAttribute('disabled')
+
         }
     })
 </script>

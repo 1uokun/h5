@@ -43,9 +43,9 @@ export default class Dirty{
         self.options.el.addEventListener('input',function(e){
             let _value;
             if(e.target.getAttribute('type') === 'checkbox'||e.target.getAttribute('type') === 'radio'){
-                _value = e.target.checked
+                _value = e.target.checked+''
             }else {
-                _value = e.target.value
+                _value = e.target.value+''
             }
             e.target.setAttribute('data-is-dirrty',_value!==e.target.getAttribute('data-dirrty-initial-value'))
             self.checkValues()
