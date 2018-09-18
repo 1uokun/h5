@@ -74,7 +74,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/
 /******/ 	var hotApplyOnUpdate = true;
 /******/ 	// eslint-disable-next-line no-unused-vars
-/******/ 	var hotCurrentHash = "8d6e980f24ef78a59f1e";
+/******/ 	var hotCurrentHash = "7085cc863f3f05cb7c68";
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule;
@@ -1348,9 +1348,9 @@ function () {
         var _value;
 
         if (e.target.getAttribute('type') === 'checkbox' || e.target.getAttribute('type') === 'radio') {
-          _value = e.target.checked;
+          _value = e.target.checked + '';
         } else {
-          _value = e.target.value;
+          _value = e.target.value + '';
         }
 
         e.target.setAttribute('data-is-dirrty', _value !== e.target.getAttribute('data-dirrty-initial-value'));
