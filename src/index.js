@@ -5,7 +5,7 @@ import scroll from './base/scroll'
 import swiper from './components/swiper'
 import flatlist from './components/flatlist'
 import dirtycheck from './components/dirtycheck.js'
-import {clusterize} from './components/clusterize'
+import clusterize from './components/clusterize'
 
 
 const Swiper = function(obj){return new swiper(obj)};

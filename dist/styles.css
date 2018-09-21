@@ -50,6 +50,7 @@
 .clusterize-scroll{
     max-height: 400px;
     overflow: auto;
+    position: relative;
 }
 .clusterize-content{
     outline: 0;
@@ -71,7 +72,7 @@
     width:100%;
     height:100%;
     background-color: #fff;
-    position: fixed;
+    position: absolute;
     top:0;
     display: flex;
     display: -webkit-flex; /* Safari */

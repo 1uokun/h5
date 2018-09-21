@@ -1,7 +1,7 @@
 export default class Pagelife {
     constructor(param){
         this.options = {
-            el : param.el,
+            el : param.el?param.el:document.body,
             DOMContentLoaded : param.DOMContentLoaded,
             onload : param.onload,
             defaultLoading : param.defaultLoading
@@ -14,19 +14,23 @@ export default class Pagelife {
     }
     onload(){
         this.options.onload&&this.options.onload()
-        this.options.defaultLoading&&this.cleanLoading()
     }
 
     bindEvent(){
+        let self = this.options;
         document.addEventListener('DOMContentLoaded', this.DOMContentLoaded.bind(this))
-        window.onload = this.onload.bind(this)
+        window.onload = function(){
+            self.defaultLoading&&this.cleanLoading(self.el);
+            this.onload()
+        }.bind(this);
+
         this.options.defaultLoading&&this.defaultLoading()
     }
 
 
     //默认一个加载样式
     defaultLoading(){
-        document.body.style.overflow = 'hidden'
+        this.options.el.style.overflow = 'hidden'
         let footer = document.createElement('div')
         footer.className='lds-default-footer'
         footer.innerHTML =
@@ -44,11 +48,11 @@ export default class Pagelife {
             '        <div></div>' +
             '        <div></div>' +
             '    </div>'
-        document.body.appendChild(footer)
+        this.options.el.appendChild(footer)
     }
 
-    cleanLoading(){
+    cleanLoading(el){
         document.querySelector('.lds-default-footer').style.display = 'none'
-        document.body.style.overflow = 'auto'
+        el.style.overflow = 'auto'
     }
 }
