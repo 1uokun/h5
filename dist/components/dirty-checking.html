@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <title>脏值检测应用</title>
     <link rel="stylesheet" href="../styles.css">
+    <style>
+        .dd-btn-submit{
+            background-color: lightgrey;
+        }
+    </style>
 </head>
 <body>
 <script type="text/javascript" src="../dingdingH5.js"></script>
@@ -12,6 +17,8 @@
     <br>
     <input type="text" class="dd-input" value="Niko Bellic">
     <br>
+    single select
+    <br>
     <select class="dd-select">
         <option value ="volvo">Volvo</option>
         <option value ="saab">Saab</option>
@@ -19,13 +26,23 @@
         <option value="audi">Audi</option>
     </select>
     <br>
+    multiple select
+    <br>
+    <select class="dd-select" multiple>
+        <option value ="react">react</option>
+        <option value ="angular">angular</option>
+        <option value="vue">vue</option>
+    </select>
+    <br>
     <input type="checkbox" class="dd-checkbox" checked>
     <input type="checkbox" class="dd-checkbox">
     <input type="radio" class="dd-radio">
     <br>
+    <input type="file">
+    <br>
     <textarea cols="30" rows="10" class="dd-textarea"></textarea>
     <br>
-    <button class="dd-btn-submit" disabled>Submit</button>
+    <button class="dd-btn-submit" disabled onclick="getOnlyChange()">Submit</button>
 </from>
 <script>
     ddH5.Dirty({
@@ -33,13 +50,22 @@
         onClean:function(){
             console.log('i am clean')
             document.querySelector('.dd-btn-submit').setAttribute('disabled',true)
+            document.querySelector('.dd-btn-submit').style.backgroundColor = 'lightgrey'
         },
         onDirty:function(){
             console.log('i am dirty')
             document.querySelector('.dd-btn-submit').removeAttribute('disabled')
+            document.querySelector('.dd-btn-submit').style.backgroundColor = 'white'
 
         }
     })
+
+    function getOnlyChange(){
+        console.log(document.getElementById('my_form').querySelectorAll('[data-is-dirrty="true"]'))
+    }
+    // 只获取改变了的元素
+    // $('form *[data-is-dirrty="true"]').serialize()
 </script>
+<a href="https://github.com/1uokun/h5/blob/master/src/components/dirtycheck.js">JavaScript代码</a>
 </body>
 </html>
