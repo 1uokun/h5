@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>virtualize</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+<script type="text/javascript" src="../dingdingH5.js"></script>
+<div class="Virtualize"></div>
+<script>
+    var aRows1 = [];
+    for (var i=1; i<5001; ++i) {
+        aRows1.push(i);
+    }
+    ddH5.Virtualize({
+        data:[],
+        rowRenderer:function({index, isScrolling, key, style}){
+            return {}
+        },
+        width:Number,//Width of the list
+        height:Number,
+        rowCount:Number,//Number of rows in list.
+        rowHeight:function(index){
+            return Number//固定行高（数字）或返回给定索引的行高度的函数
+        },
+
+    })
+</script>
+</body>
+</html>
