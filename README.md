@@ -2,6 +2,7 @@
  - 使用文档
  - [基于Scroll组件的图片懒加载](https://1uokun.github.io/h5/dist/)
  - [基于Clusterize.js思想的虚拟长列表](https://1uokun.github.io/h5/dist/components/clusterize.html)
+ - 基于react-virtualized思想的虚拟长列表[x]
  - [基于swiper.js思想的触摸版轮播](https://1uokun.github.io/h5/dist/components/swiper.html)
  - [脏值检测简单应用 - 表单提交](https://1uokun.github.io/h5/dist/components/dirty-checking.html)
 
@@ -24,16 +25,17 @@ npm run build
 
 ## todo-list
 基础类库
- - [ ] [Scroll](https://github.com/1uokun/h5/blob/master/src/base/scroll.js)
+ - [x] [Scroll](https://github.com/1uokun/h5/blob/master/src/base/scroll.js)
  - [ ] Touch
- - [ ] PageLife
+ - [x] [PageLife](https://github.com/1uokun/h5/blob/master/src/base/pagelife.js)
  - [ ] [Util](https://github.com/1uokun/h5/blob/master/src/base/util.js)
  
 组件
  - [ ] FlatList
- - [ ] [Clusterize](https://github.com/1uokun/h5/blob/master/src/components/clusterize.js)
- - [ ] [Swiper](https://github.com/1uokun/h5/blob/master/src/components/swiper.js)
- - [ ] [Dirty-Checking](https://github.com/1uokun/h5/blob/master/src/components/dirtycheck.js)
+ - [x] [Clusterize](https://github.com/1uokun/h5/blob/master/src/components/clusterize.js)
+ - [ ] [Virtualize](https://github.com/1uokun/h5/blob/master/src/components/virtualize.js)
+ - [x] [Swiper](https://github.com/1uokun/h5/blob/master/src/components/swiper.js)
+ - [x] [Dirty-Checking](https://github.com/1uokun/h5/blob/master/src/components/dirtycheck.js)
  - [ ] PullRefresh
     - [参考](http://www.alloyteam.com/author/tat-tennylv/)
     

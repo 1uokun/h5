@@ -1,31 +1,68 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-    <meta charset="UTF-8">
-    <title>virtualize</title>
-    <link rel="stylesheet" href="../styles.css">
-</head>
-<body>
-<script type="text/javascript" src="../dingdingH5.js"></script>
-<div class="Virtualize"></div>
-<script>
-    var aRows1 = [];
-    for (var i=1; i<5001; ++i) {
-        aRows1.push(i);
-    }
-    ddH5.Virtualize({
-        data:[],
-        rowRenderer:function({index, isScrolling, key, style}){
-            return {}
-        },
-        width:Number,//Width of the list
-        height:Number,
-        rowCount:Number,//Number of rows in list.
-        rowHeight:function(index){
-            return Number//固定行高（数字）或返回给定索引的行高度的函数
-        },
+<!--<!DOCTYPE html>-->
+<!--<html lang="zh-CN">-->
+<!--<head>-->
+    <!--<meta charset="UTF-8">-->
+    <!--<title>virtualize</title>-->
+    <!--<link rel="stylesheet" href="../styles.css">-->
+    <!--<style>-->
+        <!--.virtualize-scroll{-->
+            <!--overflow-y: auto;-->
+            <!--height:500px;/*固定高度*/-->
+            <!--width:80%-->
+        <!--}-->
+        <!--.virtualize-content{-->
+            <!--height:5000px;-->
+            <!--position: relative;-->
+            <!--overflow: hidden;-->
+        <!--}-->
+    <!--</style>-->
+<!--</head>-->
+<!--<body>-->
+<!--<div class="virtualize">-->
+    <!--<div id="scrollArea" class="virtualize-scroll">-->
+        <!--<div id="contentArea" class="virtualize-content">-->
+        <!--</div>-->
+    <!--</div>-->
+<!--</div>-->
+<!--<script>-->
+    <!--let html = '',-->
+        <!--rowHeight = 50,-->
+        <!--data=[],-->
+        <!--change=0,-->
+        <!--rowCount=10,-->
+        <!--rowRenderer=function(data){-->
+            <!--return `<div style="height:${rowHeight}px;border:1px solid #f00;position:absolute;top:${rowHeight*data.name}px;width:100%;left:0"> ${data.name}</div>`-->
+        <!--}-->
+    <!--for(let i=0;i<200;i++){-->
+        <!--data.push({name:i})-->
+    <!--}-->
 
-    })
-</script>
-</body>
-</html>
+    <!--for(let i=0;i<rowCount;i++){-->
+        <!--let textnode = document.createElement("div");-->
+        <!--textnode.style.position = 'absolute'-->
+        <!--textnode.style.top = rowHeight*i+'px'-->
+        <!--textnode.style.width = '100%'-->
+        <!--textnode.innerHTML =`<div style="height:${rowHeight}px;border:1px solid #f00;">${i}</div>`-->
+        <!--contentArea.appendChild(textnode)-->
+    <!--}-->
+
+
+
+    <!--scrollArea.addEventListener('scroll',function(event){-->
+        <!--let i= parseInt(event.srcElement.scrollTop/rowHeight);-->
+        <!--console.log(change,i)-->
+        <!--if(change!==i){-->
+            <!--change=i;-->
+            <!--let lastHeight = contentArea.lastChild.style.top.replace(/px/gi,'')*1;-->
+            <!--let textnode = document.createElement("div");-->
+            <!--textnode.style.position = 'absolute'-->
+            <!--textnode.style.top = rowHeight+lastHeight+'px'-->
+            <!--textnode.style.width = '100%'-->
+            <!--textnode.innerHTML =`<div style="height:${rowHeight}px;border:1px solid #f00;">${event.srcElement.scrollTop}</div>`-->
+            <!--contentArea.appendChild(textnode)-->
+            <!--contentArea.removeChild(contentArea.childNodes[0]);-->
+        <!--}-->
+    <!--})-->
+<!--</script>-->
+<!--</body>-->
+<!--</html>-->
