@@ -1,4 +1,5 @@
 import Touch from '../base/touch'
+import {throttle} from '../base/util'
 
 export default class Swiper extends Touch{
     constructor(param){
@@ -15,7 +16,7 @@ export default class Swiper extends Touch{
 
         this.loop=Boolean(param.loop);  //whether loop Swiper
 
-        this.initialSwiperActive()
+        this.initialSwiperActive();
     }
 
     /**
@@ -55,6 +56,10 @@ export default class Swiper extends Touch{
                 break;
             }
         }
+        //window onresize
+        window.onresize=function(){
+            throttle(this.swiperRender(this.options._index))
+        }.bind(this)
     }
 
     swiperRender(i){
@@ -79,14 +84,14 @@ export default class Swiper extends Touch{
         this.options.el.children[next_index].classList.add('swiper-slide-active');
         this.options.el.children[last_index].classList.remove('swiper-slide-active');
     }
-    onTouchStart(e){
-        let coords = e.changedTouches.item(0),opt = this.options;
+    onTouchStart(coords){
+        let opt = this.options;
         opt.x1 = coords.pageX;
         opt.y1 = coords.pageY;
         opt.el.style.transitionDuration = '0ms';
         opt.last = performance.now();
     }
-    onTouchMove(e){
+    onTouchMove(coords){
         let opt = this.options;
 
         //loop logic core code
@@ -102,14 +107,14 @@ export default class Swiper extends Touch{
         }
 
         opt.el.style.webkitTransform = `translate3d(${
-        e.changedTouches.item(0).pageX
+        coords.pageX
         -opt.x1    // 位移距离
         -opt.el.offsetWidth    // el宽度
         *opt._index            // 当前屏幕显示的slide所在的索引
             }px, 0px, 0px)`
     }
-    onTouchEnd(e){
-        let coords = e.changedTouches.item(0),opt = this.options;
+    onTouchEnd(coords){
+        let opt = this.options;
         opt.x2 = coords.pageX;
         opt.y2 = coords.pageY;
         opt.el.style.transitionDuration = '300ms';
@@ -147,4 +152,10 @@ export default class Swiper extends Touch{
  *
  * 参考： [HTML5 DOM元素类名相关操作API classList简介 - 张鑫旭](https://www.zhangxinxu.com/wordpress/2013/07/domtokenlist-html5-dom-classlist-类名/)
  *
+ * **/
+
+/**
+ * appendChild, insertBefore
+ *
+ * @description js里的农夫山泉：只是移动node，并不产生node。
  * **/

@@ -74,7 +74,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/
 /******/ 	var hotApplyOnUpdate = true;
 /******/ 	// eslint-disable-next-line no-unused-vars
-/******/ 	var hotCurrentHash = "d32276f9f4ba1402f21b";
+/******/ 	var hotCurrentHash = "3db97ddb641dd10f6342";
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule;
@@ -1078,20 +1078,14 @@ function () {
       touchMove: param.touchMove,
       touchEnd: param.touchEnd
     };
-    this.state = {
-      x1: 0,
-      x2: 0,
-      y1: 0,
-      y2: 0
-    };
     this.bindEvent();
   }
   /**
    * 判断移动的方向,结果是Left, Right, Up, Down中的一个
-   * @param  {} x1 起点的横坐标
-   * @param  {} x2 终点的横坐标
-   * @param  {} y1 起点的纵坐标
-   * @param  {} y2 终点的纵坐标
+   * @param  x1 起点的横坐标
+   * @param  x2 终点的横坐标
+   * @param  y1 起点的纵坐标
+   * @param  y2 终点的纵坐标
    *
    */
   // Direction
@@ -1126,6 +1120,22 @@ function () {
     value: function TapTime(last) {
       var endTime = performance.now();
       return endTime - last;
+    } //private _onTouchStart for mouse event
+
+  }, {
+    key: "_onTouchStart",
+    value: function _onTouchStart(e) {
+      this.isMouseDown = true;
+      var coords = e.changedTouches ? e.changedTouches.item(0) : e;
+      /**
+       * public this.onTouchStart
+       * @param {pageX,pageY} for Swiper
+       * **/
+
+      this.onTouchStart({
+        pageX: coords.pageX,
+        pageY: coords.pageY
+      });
     }
   }, {
     key: "onTouchStart",
@@ -1133,9 +1143,22 @@ function () {
       return this.options.touchStart(e);
     }
   }, {
+    key: "_onTouchMove",
+    value: function _onTouchMove(e) {
+      var coords = e.changedTouches ? e.changedTouches.item(0) : e;
+      this.isMouseDown && this.onTouchMove(coords);
+    }
+  }, {
     key: "onTouchMove",
     value: function onTouchMove(e) {
       return this.options.touchMove(e);
+    }
+  }, {
+    key: "_onTouchEnd",
+    value: function _onTouchEnd(e) {
+      this.isMouseDown = false;
+      var coords = e.changedTouches ? e.changedTouches.item(0) : e;
+      this.onTouchEnd(coords);
     }
   }, {
     key: "onTouchEnd",
@@ -1147,10 +1170,11 @@ function () {
     value: function bindEvent() {
       this.options.el.addEventListener('touchstart', this.onTouchStart.bind(this));
       this.options.el.addEventListener('touchmove', this.onTouchMove.bind(this));
-      this.options.el.addEventListener('touchend', this.onTouchEnd.bind(this)); //feature 添加鼠标事件
-      // this.options.el.addEventListener('mousedown',this.onTouchStart.bind(this))
-      // this.options.el.addEventListener('mousemove',this.onTouchMove.bind(this))
-      // this.options.el.addEventListener('mouseup',this.onTouchEnd.bind(this))
+      this.options.el.addEventListener('touchend', this.onTouchEnd.bind(this)); //添加鼠标事件
+
+      this.options.el.addEventListener('mousedown', this._onTouchStart.bind(this));
+      this.options.el.addEventListener('mousemove', this._onTouchMove.bind(this));
+      this.options.el.addEventListener('mouseup', this._onTouchEnd.bind(this));
     }
   }]);
 
@@ -1567,6 +1591,8 @@ function () {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Swiper; });
 /* harmony import */ var _base_touch__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../base/touch */ "./src/base/touch.js");
+/* harmony import */ var _base_util__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../base/util */ "./src/base/util.js");
+/* harmony import */ var _base_util__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_base_util__WEBPACK_IMPORTED_MODULE_1__);
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -1584,6 +1610,7 @@ function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.g
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
 
 
 
@@ -1660,7 +1687,12 @@ function (_Touch) {
           this.options.el.style.webkitTransform = "translate3d(-".concat(this.options.el.offsetWidth * i, "px, 0px, 0px)");
           break;
         }
-      }
+      } //window onresize
+
+
+      window.onresize = function () {
+        Object(_base_util__WEBPACK_IMPORTED_MODULE_1__["throttle"])(this.swiperRender(this.options._index));
+      }.bind(this);
     }
   }, {
     key: "swiperRender",
@@ -1691,9 +1723,8 @@ function (_Touch) {
     }
   }, {
     key: "onTouchStart",
-    value: function onTouchStart(e) {
-      var coords = e.changedTouches.item(0),
-          opt = this.options;
+    value: function onTouchStart(coords) {
+      var opt = this.options;
       opt.x1 = coords.pageX;
       opt.y1 = coords.pageY;
       opt.el.style.transitionDuration = '0ms';
@@ -1701,7 +1732,7 @@ function (_Touch) {
     }
   }, {
     key: "onTouchMove",
-    value: function onTouchMove(e) {
+    value: function onTouchMove(coords) {
       var opt = this.options; //loop logic core code
 
       if (this.loop) {
@@ -1716,16 +1747,15 @@ function (_Touch) {
         }
       }
 
-      opt.el.style.webkitTransform = "translate3d(".concat(e.changedTouches.item(0).pageX - opt.x1 // 位移距离
+      opt.el.style.webkitTransform = "translate3d(".concat(coords.pageX - opt.x1 // 位移距离
       - opt.el.offsetWidth // el宽度
       * opt._index // 当前屏幕显示的slide所在的索引
       , "px, 0px, 0px)");
     }
   }, {
     key: "onTouchEnd",
-    value: function onTouchEnd(e) {
-      var coords = e.changedTouches.item(0),
-          opt = this.options;
+    value: function onTouchEnd(coords) {
+      var opt = this.options;
       opt.x2 = coords.pageX;
       opt.y2 = coords.pageY;
       opt.el.style.transitionDuration = '300ms';
@@ -1766,6 +1796,12 @@ function (_Touch) {
  *
  * 参考： [HTML5 DOM元素类名相关操作API classList简介 - 张鑫旭](https://www.zhangxinxu.com/wordpress/2013/07/domtokenlist-html5-dom-classlist-类名/)
  *
+ * **/
+
+/**
+ * appendChild, insertBefore
+ *
+ * @description js里的农夫山泉：只是移动node，并不产生node。
  * **/
 
 
