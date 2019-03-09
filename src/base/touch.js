@@ -1,3 +1,5 @@
+import {throttle} from "./util";
+
 export default class Touch {
     constructor(param){
         this.options = {
@@ -53,7 +55,7 @@ export default class Touch {
 
     _onTouchMove(e){
         let coords = e.changedTouches?e.changedTouches.item(0):e;
-        this.isMouseDown&&this.onTouchMove(coords);
+        this.isMouseDown&&throttle(this.onTouchMove(coords));
     }
     onTouchMove(e){
         return this.options.touchMove(e)

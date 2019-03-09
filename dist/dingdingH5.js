@@ -74,7 +74,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/
 /******/ 	var hotApplyOnUpdate = true;
 /******/ 	// eslint-disable-next-line no-unused-vars
-/******/ 	var hotCurrentHash = "3db97ddb641dd10f6342";
+/******/ 	var hotCurrentHash = "af908aa1fbfec0fa093d";
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule;
@@ -1060,11 +1060,15 @@ var FSM = {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Touch; });
+/* harmony import */ var _util__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./util */ "./src/base/util.js");
+/* harmony import */ var _util__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_util__WEBPACK_IMPORTED_MODULE_0__);
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+
 
 var Touch =
 /*#__PURE__*/
@@ -1146,7 +1150,7 @@ function () {
     key: "_onTouchMove",
     value: function _onTouchMove(e) {
       var coords = e.changedTouches ? e.changedTouches.item(0) : e;
-      this.isMouseDown && this.onTouchMove(coords);
+      this.isMouseDown && Object(_util__WEBPACK_IMPORTED_MODULE_0__["throttle"])(this.onTouchMove(coords));
     }
   }, {
     key: "onTouchMove",
@@ -1690,9 +1694,10 @@ function (_Touch) {
       } //window onresize
 
 
-      window.onresize = function () {
-        Object(_base_util__WEBPACK_IMPORTED_MODULE_1__["throttle"])(this.swiperRender(this.options._index));
-      }.bind(this);
+      window.onresize = Object(_base_util__WEBPACK_IMPORTED_MODULE_1__["throttle"])(function () {
+        this.options.el.style.transitionDuration = '0ms';
+        this.options.el.style.webkitTransform = "translate3d(-".concat(this.options.el.offsetWidth * this.options._index, "px, 0px, 0px)");
+      }).bind(this);
     }
   }, {
     key: "swiperRender",
