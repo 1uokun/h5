@@ -74,7 +74,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/
 /******/ 	var hotApplyOnUpdate = true;
 /******/ 	// eslint-disable-next-line no-unused-vars
-/******/ 	var hotCurrentHash = "d7d7d8a38f33cf46ed38";
+/******/ 	var hotCurrentHash = "d32276f9f4ba1402f21b";
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule;
@@ -1603,58 +1603,91 @@ function (_Touch) {
       y1: 0,
       x2: 0,
       y2: 0,
-      _index: 0,
+      _index: param.index || 0,
+      //initial slide index
       last: 0,
-      el: param.el,
-      slides: param.el.querySelectorAll('.swiper-slide')
+      //record interval time
+      el: param.el
     };
+    _this.loop = Boolean(param.loop); //whether loop Swiper
 
-    _this.swiperActive();
+    _this.initialSwiperActive();
 
     return _this;
   }
   /**
-   *  其次，滑动动画的原理
+   *  滑动动画的原理
    *  1。坐标
    *     利用webkitTransform: translate3d(change, 0px, 0px)相对定位
    *
    *  2。动画时间
    *     transfrom-duration: 0ms - 300ms
    *     触发滚动事件时设置事件为300ms，结束后设置回原来的0ms
+   *
+   *  3。如何循环
+   *     在轮播队列 el.children 中unshift最后1个节点，push第1个节点
+   *     比如 原队列为[1,2,3] 循环体则为[3,1,2,3,1]
+   *     滚动到新增的第1个或最后1个时，transform直接还原到本体上
+   *     在onTouchMove事件中处理
    * **/
 
 
   _createClass(Swiper, [{
+    key: "initialSwiperActive",
+    value: function initialSwiperActive() {
+      var _slides = this.options.el.children; //if loop
+
+      if (this.loop) {
+        //是否循环
+        var firstSlider = _slides[0].cloneNode(true);
+
+        var lastSlider = _slides[_slides.length - 1].cloneNode(true);
+
+        this.options.el.insertBefore(lastSlider, this.options.el.childNodes[0]);
+        this.options.el.appendChild(firstSlider);
+      } //if no .swiper-slide-active node
+
+
+      if (!this.options.el.querySelector('.swiper-slide-active')) {
+        _slides[this.loop ? 1 : 0].classList.add('swiper-slide-active');
+      } //if has .swiper-slide-active node
+
+
+      for (var i = 0; i < _slides.length; i++) {
+        if (_slides[i].classList.contains('swiper-slide-active')) {
+          this.options._index = i;
+          this.options.el.style.transitionDuration = '0ms';
+          this.options.el.style.webkitTransform = "translate3d(-".concat(this.options.el.offsetWidth * i, "px, 0px, 0px)");
+          break;
+        }
+      }
+    }
+  }, {
     key: "swiperRender",
     value: function swiperRender(i) {
-      if (this.horizontalDirection(this.options) === 'Left' && i < this.options.slides.length - 1) {
-        this.options.slides[i].classList.remove('swiper-slide-active');
-        this.options.slides[i + 1].classList.add('swiper-slide-active');
+      var direction = this.horizontalDirection(this.options);
+
+      if (direction === 'Left' && i < this.options.el.children.length - 1) {
         this.options._index += 1;
         this.options.el.style.webkitTransform = "translate3d(-".concat(this.options.el.offsetWidth * (i + 1), "px, 0px, 0px)");
-      } else if (this.horizontalDirection(this.options) === 'Right' && i >= 1) {
-        this.options.slides[i].classList.remove('swiper-slide-active');
-        this.options.slides[i - 1].classList.add('swiper-slide-active');
+      } else if (direction === 'Right' && i >= 1) {
         this.options._index -= 1;
         this.options.el.style.webkitTransform = "translate3d(-".concat(this.options.el.offsetWidth * (i - 1), "px, 0px, 0px)");
       } else {
         this.options.el.style.webkitTransform = "translate3d(-".concat(this.options.el.offsetWidth * i, "px, 0px, 0px)");
       }
     }
-  }, {
-    key: "swiperActive",
-    value: function swiperActive() {
-      if (!this.options.el.querySelector('.swiper-slide-active')) {
-        this.options.slides[0].classList.add('swiper-slide-active');
-      }
+    /** listen slide active for example : dot
+     *
+     * @param last_index  Last index before @swiperRender() change
+     * @param next_index  Current index
+     */
 
-      for (var i = 0; i < this.options.slides.length; i++) {
-        if (this.options.slides[i].classList.contains('swiper-slide-active')) {
-          this.options._index = i;
-          this.options.el.style.transitionDuration = '0ms';
-          this.options.el.style.webkitTransform = "translate3d(-".concat(this.options.el.offsetWidth * i, "px, 0px, 0px)");
-        }
-      }
+  }, {
+    key: "onSlideActive",
+    value: function onSlideActive(last_index, next_index) {
+      this.options.el.children[next_index].classList.add('swiper-slide-active');
+      this.options.el.children[last_index].classList.remove('swiper-slide-active');
     }
   }, {
     key: "onTouchStart",
@@ -1669,7 +1702,20 @@ function (_Touch) {
   }, {
     key: "onTouchMove",
     value: function onTouchMove(e) {
-      var opt = this.options;
+      var opt = this.options; //loop logic core code
+
+      if (this.loop) {
+        var _len = opt.el.children.length;
+
+        if (opt._index === 0) {
+          this.options._index = _len - 2;
+          this.options.el.style.webkitTransform = "translate3d(-".concat(this.options.el.offsetWidth * (_len - 1), "px, 0px, 0px)");
+        } else if (opt._index === _len - 1) {
+          this.options._index = 1;
+          this.options.el.style.webkitTransform = "translate3d(-".concat(this.options.el.offsetWidth * 1, "px, 0px, 0px)");
+        }
+      }
+
       opt.el.style.webkitTransform = "translate3d(".concat(e.changedTouches.item(0).pageX - opt.x1 // 位移距离
       - opt.el.offsetWidth // el宽度
       * opt._index // 当前屏幕显示的slide所在的索引
@@ -1698,7 +1744,9 @@ function (_Touch) {
        * **/
 
       if (Math.abs(opt.x2 - opt.x1) > opt.el.offsetWidth / 2 || this.TapTime(opt.last) < 300) {
+        var last_index = opt._index;
         this.swiperRender(opt._index);
+        this.onSlideActive(last_index, opt._index);
       }
     }
   }]);
@@ -1725,11 +1773,154 @@ function (_Touch) {
 
 /***/ }),
 
+/***/ "./src/components/virtualize.js":
+/*!**************************************!*\
+  !*** ./src/components/virtualize.js ***!
+  \**************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return clusterize; });
+/* harmony import */ var _base_pagelife__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../base/pagelife */ "./src/base/pagelife.js");
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+
+
+var clusterize =
+/*#__PURE__*/
+function (_Page) {
+  _inherits(clusterize, _Page);
+
+  function clusterize(param) {
+    var _this;
+
+    _classCallCheck(this, clusterize);
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(clusterize).call(this, Object.assign(param, {
+      el: param.scroll_elem
+    })));
+    _this.options = {
+      content_elem: param.content_elem,
+      content_height: param.content_height ? param.content_height : 400,
+      scroll_elem: param.scroll_elem,
+      item_height: 0,
+      top_height: 0,
+      bottom_height: 0,
+      _html: '',
+      density: 20,
+      renderItem: param.renderItem,
+      data: param.data // 闭包参数
+
+    };
+    _this._change = 0;
+    return _this;
+  }
+
+  _createClass(clusterize, [{
+    key: "DOMContentLoaded",
+    value: function DOMContentLoaded() {
+      this.getItemHeight();
+      this.getDensity();
+    }
+  }, {
+    key: "onload",
+    value: function onload() {
+      this.render(this.options.data.slice(0, this.options.density * 2), []);
+      this.onScroll();
+    } // 获取单个item高度
+
+  }, {
+    key: "getItemHeight",
+    value: function getItemHeight() {
+      this.options.scroll_elem.style.height = this.options.content_height + 'px'; // 在DOMContentLoaded阶段先获得item高度，以备后续计算密度
+
+      this.options.content_elem.innerHTML = this.options.renderItem(aRows1[0], 0);
+      this.options.item_height = this.options.content_elem.offsetHeight;
+    } // 获取content盒子内item的密度
+
+  }, {
+    key: "getDensity",
+    value: function getDensity() {
+      this.options.density = parseInt((this.options.content_height + this.options.item_height * 2) / (this.options.item_height - 2));
+    }
+    /**
+     * 通过控制<tbody>的头尾<tr>的高度来达到虚拟渲染
+     * 灵感来自https://clusterize.js.org/
+     * **/
+    // 动态渲染函数
+
+  }, {
+    key: "render",
+    value: function render(show_no_data_row, cache) {
+      this.options._html = ''; // firstChild 第一个tr的高度
+
+      this.options.top_height = this.options.item_height * cache.length; // lastChild 最后一个tr的高度
+
+      this.options.bottom_height = this.options.item_height * (this.options.data.length - cache.length - show_no_data_row.length); // 中间的html内容
+
+      show_no_data_row.forEach(function (item, index) {
+        this.options._html += this.options.renderItem(item, index);
+      }.bind(this));
+      this.options.content_elem.innerHTML = this.options._html;
+      this.options.content_elem.firstChild.style.height = Math.max(this.options.item_height, this.options.top_height) + 'px';
+      this.options.content_elem.lastChild.style.height = this.options.bottom_height + 'px';
+    } // 监听滚动事件
+
+  }, {
+    key: "onScroll",
+    value: function onScroll() {
+      this.options.scroll_elem.addEventListener('scroll', function (event) {
+        var len = this.options.density;
+        var i = parseInt(event.srcElement.scrollTop / this.options.item_height / len); // 滚动高度/（块高度*密度）取整 - 用于判断滚动到一半时启动渲染
+
+        if (this._change !== i) {
+          this._change = i;
+          var cache = this.options.data.slice(0, len * i);
+          var show_no_data_row = this.options.data.slice(len * i, len * (i + 2));
+          this.render(show_no_data_row, cache, i);
+        }
+      }.bind(this));
+    }
+  }]);
+
+  return clusterize;
+}(_base_pagelife__WEBPACK_IMPORTED_MODULE_0__["default"]);
+/**
+ * @other 其他相似组件
+ *
+ * new IntersectionObserver(callback, options)
+ * [使用Intersection Observer API构建无限滚动组件](https://www.w3cplus.com/vue/build-an-infinite-scroll-component-using-intersection-observer-api.html)
+ *
+ * **/
+
+
+
+
+/***/ }),
+
 /***/ "./src/index.js":
 /*!**********************!*\
   !*** ./src/index.js ***!
   \**********************/
-/*! exports provided: Swiper, Page, Touch, FlatList, Clusterize, Scroll, Dirty */
+/*! exports provided: Swiper, Page, Touch, FlatList, Clusterize, Virtualize, Scroll, Dirty */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -1739,6 +1930,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Touch", function() { return Touch; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "FlatList", function() { return FlatList; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Clusterize", function() { return Clusterize; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Virtualize", function() { return Virtualize; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Scroll", function() { return Scroll; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Dirty", function() { return Dirty; });
 /* harmony import */ var _base_pagelife__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base/pagelife */ "./src/base/pagelife.js");
@@ -1748,6 +1940,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _components_flatlist__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./components/flatlist */ "./src/components/flatlist.js");
 /* harmony import */ var _components_dirtycheck_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./components/dirtycheck.js */ "./src/components/dirtycheck.js");
 /* harmony import */ var _components_clusterize__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./components/clusterize */ "./src/components/clusterize.js");
+/* harmony import */ var _components_virtualize__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./components/virtualize */ "./src/components/virtualize.js");
+
 
 
 
@@ -1774,6 +1968,10 @@ var FlatList = function FlatList(obj) {
 
 var Clusterize = function Clusterize(obj) {
   return new _components_clusterize__WEBPACK_IMPORTED_MODULE_6__["default"](obj);
+};
+
+var Virtualize = function Virtualize(obj) {
+  return new _components_virtualize__WEBPACK_IMPORTED_MODULE_7__["default"](obj);
 };
 
 var Scroll = function Scroll(obj) {

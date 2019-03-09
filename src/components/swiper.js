@@ -2,68 +2,105 @@ import Touch from '../base/touch'
 
 export default class Swiper extends Touch{
     constructor(param){
-        super(param)
+        super(param);
         this.options = {
             x1: 0,
             y1: 0,
             x2: 0,
             y2: 0,
-            _index: 0,
-            last: 0,
+            _index: param.index||0,  //initial slide index
+            last: 0, //record interval time
             el: param.el,
-            slides: param.el.querySelectorAll('.swiper-slide')
-        }
+        };
 
-        this.swiperActive()
+        this.loop=Boolean(param.loop);  //whether loop Swiper
+
+        this.initialSwiperActive()
     }
 
     /**
-     *  其次，滑动动画的原理
+     *  滑动动画的原理
      *  1。坐标
      *     利用webkitTransform: translate3d(change, 0px, 0px)相对定位
      *
      *  2。动画时间
      *     transfrom-duration: 0ms - 300ms
      *     触发滚动事件时设置事件为300ms，结束后设置回原来的0ms
+     *
+     *  3。如何循环
+     *     在轮播队列 el.children 中unshift最后1个节点，push第1个节点
+     *     比如 原队列为[1,2,3] 循环体则为[3,1,2,3,1]
+     *     滚动到新增的第1个或最后1个时，transform直接还原到本体上
+     *     在onTouchMove事件中处理
      * **/
+    initialSwiperActive(){
+        const _slides = this.options.el.children;
+        //if loop
+        if(this.loop){//是否循环
+            const firstSlider=_slides[0].cloneNode(true);
+            const lastSlider=_slides[_slides.length-1].cloneNode(true);
+            this.options.el.insertBefore(lastSlider,this.options.el.childNodes[0]);
+            this.options.el.appendChild(firstSlider);
+        }
+        //if no .swiper-slide-active node
+        if(!this.options.el.querySelector('.swiper-slide-active')){
+            _slides[this.loop?1:0].classList.add('swiper-slide-active')
+        }
+        //if has .swiper-slide-active node
+        for(let i=0;i<_slides.length;i++){
+            if(_slides[i].classList.contains('swiper-slide-active')){
+                this.options._index = i;
+                this.options.el.style.transitionDuration = '0ms';
+                this.options.el.style.webkitTransform = `translate3d(-${this.options.el.offsetWidth*i}px, 0px, 0px)`
+                break;
+            }
+        }
+    }
+
     swiperRender(i){
-        if(this.horizontalDirection(this.options)==='Left'&&i<this.options.slides.length-1) {
-            this.options.slides[i].classList.remove('swiper-slide-active')
-            this.options.slides[i + 1].classList.add('swiper-slide-active')
-            this.options._index += 1
+        const direction = this.horizontalDirection(this.options);
+        if(direction==='Left'&&i<this.options.el.children.length-1) {
+            this.options._index+=1;
             this.options.el.style.webkitTransform = `translate3d(-${this.options.el.offsetWidth * (i + 1)}px, 0px, 0px)`
-        }else if(this.horizontalDirection(this.options)==='Right'&&i>=1){
-            this.options.slides[i].classList.remove('swiper-slide-active')
-            this.options.slides[i - 1].classList.add('swiper-slide-active')
-            this.options._index-=1
+        }else if(direction==='Right'&&i>=1){
+            this.options._index-=1;
             this.options.el.style.webkitTransform = `translate3d(-${this.options.el.offsetWidth*(i-1)}px, 0px, 0px)`
         }else {
             this.options.el.style.webkitTransform = `translate3d(-${this.options.el.offsetWidth*i}px, 0px, 0px)`
         }
     }
 
-    swiperActive(){
-        if(!this.options.el.querySelector('.swiper-slide-active')){
-            this.options.slides[0].classList.add('swiper-slide-active')
-        }
-        for(let i=0;i<this.options.slides.length;i++){
-            if(this.options.slides[i].classList.contains('swiper-slide-active')){
-                this.options._index = i
-                this.options.el.style.transitionDuration = '0ms'
-                this.options.el.style.webkitTransform = `translate3d(-${this.options.el.offsetWidth*i}px, 0px, 0px)`
-            }
-        }
+    /** listen slide active for example : dot
+     *
+     * @param last_index  Last index before @swiperRender() change
+     * @param next_index  Current index
+     */
+    onSlideActive(last_index,next_index) {
+        this.options.el.children[next_index].classList.add('swiper-slide-active');
+        this.options.el.children[last_index].classList.remove('swiper-slide-active');
     }
-
     onTouchStart(e){
         let coords = e.changedTouches.item(0),opt = this.options;
-        opt.x1 = coords.pageX
-        opt.y1 = coords.pageY
-        opt.el.style.transitionDuration = '0ms'
-        opt.last = performance.now()
+        opt.x1 = coords.pageX;
+        opt.y1 = coords.pageY;
+        opt.el.style.transitionDuration = '0ms';
+        opt.last = performance.now();
     }
     onTouchMove(e){
         let opt = this.options;
+
+        //loop logic core code
+        if(this.loop){
+            const _len = opt.el.children.length;
+            if(opt._index===0){
+                this.options._index=_len-2;
+                this.options.el.style.webkitTransform = `translate3d(-${this.options.el.offsetWidth * (_len - 1)}px, 0px, 0px)`
+            }else if(opt._index===_len-1){
+                this.options._index=1;
+                this.options.el.style.webkitTransform = `translate3d(-${this.options.el.offsetWidth * (1)}px, 0px, 0px)`
+            }
+        }
+
         opt.el.style.webkitTransform = `translate3d(${
         e.changedTouches.item(0).pageX
         -opt.x1    // 位移距离
@@ -90,7 +127,9 @@ export default class Swiper extends Touch{
          *
          * **/
         if(Math.abs(opt.x2 - opt.x1) > opt.el.offsetWidth/2 || this.TapTime(opt.last)<300){
-            this.swiperRender(opt._index)
+            const last_index = opt._index;
+            this.swiperRender(opt._index);
+            this.onSlideActive(last_index,opt._index);
         }
     }
 }
