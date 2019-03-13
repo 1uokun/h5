@@ -52,14 +52,14 @@ export default class Swiper extends Touch{
             if(_slides[i].classList.contains('swiper-slide-active')){
                 this.options._index = i;
                 this.options.el.style.transitionDuration = '0ms';
-                this.options.el.style.webkitTransform = `translate3d(-${this.options.el.offsetWidth*i}px, 0px, 0px)`
+                this.updateTransform(`translate3d(-${this.options.el.offsetWidth*i}px, 0px, 0px)`);
                 break;
             }
         }
         //window onresize
         window.onresize=throttle(function(){
             this.options.el.style.transitionDuration = '0ms';
-            this.options.el.style.webkitTransform = `translate3d(-${this.options.el.offsetWidth * this.options._index}px, 0px, 0px)`
+            this.updateTransform(`translate3d(-${this.options.el.offsetWidth * this.options._index}px, 0px, 0px)`)
         }).bind(this)
     }
 
@@ -67,13 +67,18 @@ export default class Swiper extends Touch{
         const direction = this.horizontalDirection(this.options);
         if(direction==='Left'&&i<this.options.el.children.length-1) {
             this.options._index+=1;
-            this.options.el.style.webkitTransform = `translate3d(-${this.options.el.offsetWidth * (i + 1)}px, 0px, 0px)`
+            this.updateTransform(`translate3d(-${this.options.el.offsetWidth * (i + 1)}px, 0px, 0px)`)
         }else if(direction==='Right'&&i>=1){
             this.options._index-=1;
-            this.options.el.style.webkitTransform = `translate3d(-${this.options.el.offsetWidth*(i-1)}px, 0px, 0px)`
+            this.updateTransform(`translate3d(-${this.options.el.offsetWidth*(i-1)}px, 0px, 0px)`)
         }else {
-            this.options.el.style.webkitTransform = `translate3d(-${this.options.el.offsetWidth*i}px, 0px, 0px)`
+            this.updateTransform(`translate3d(-${this.options.el.offsetWidth*i}px, 0px, 0px)`)
         }
+    }
+
+    updateTransform(translate){
+        this.options.el.style.webkitTransform = translate;
+        this.options.el.style.transform = translate
     }
 
     /** listen slide active for example : dot
@@ -100,10 +105,10 @@ export default class Swiper extends Touch{
             const _len = opt.el.children.length;
             if(opt._index===0){
                 this.options._index=_len-2;
-                this.options.el.style.webkitTransform = `translate3d(-${this.options.el.offsetWidth * (_len - 1)}px, 0px, 0px)`
+                this.updateTransform(`translate3d(-${this.options.el.offsetWidth * (_len - 1)}px, 0px, 0px)`)
             }else if(opt._index===_len-1){
                 this.options._index=1;
-                this.options.el.style.webkitTransform = `translate3d(-${this.options.el.offsetWidth * (1)}px, 0px, 0px)`
+                this.updateTransform(`translate3d(-${this.options.el.offsetWidth * (1)}px, 0px, 0px)`)
             }
         }
 

@@ -41,12 +41,12 @@ export default class Touch {
     //private _onTouchStart for mouse event
     _onTouchStart(e){
         this.isMouseDown = true;
-        let coords = e.changedTouches?e.changedTouches.item(0):e;
+        let pageX = e.type === 'touchstart'?e.targetTouches[0].pageX : e.pageX || e.clientX;
         /**
          * public this.onTouchStart
-         * @param {pageX,pageY} for Swiper
+         * @param {pageX} for Swiper
          * **/
-        this.onTouchStart({pageX:coords.pageX,pageY:coords.pageY});
+        this.onTouchStart({pageX:pageX});
     }
     onTouchStart(e){
         return this.options.touchStart(e)
@@ -54,8 +54,12 @@ export default class Touch {
 
 
     _onTouchMove(e){
-        let coords = e.changedTouches?e.changedTouches.item(0):e;
-        this.isMouseDown&&throttle(this.onTouchMove(coords));
+        document.addEventListener('touchmove',(event)=>{
+            event.preventDefault()
+        });
+        e.stopImmediatePropagation();
+        let pageX = e.pageX||e.targetTouches[0].pageX;
+        this.isMouseDown&&throttle(this.onTouchMove({pageX:pageX}));
     }
     onTouchMove(e){
         return this.options.touchMove(e)
@@ -64,17 +68,17 @@ export default class Touch {
 
     _onTouchEnd(e){
         this.isMouseDown = false;
-        let coords = e.changedTouches?e.changedTouches.item(0):e;
-        this.onTouchEnd(coords);
+        let pageX = e.pageX||e.changedTouches[0].pageX;
+        this.onTouchEnd({pageX:pageX});
     }
     onTouchEnd(e){
         return this.options.touchEnd(e)
     }
 
     bindEvent(){
-        this.options.el.addEventListener('touchstart',this.onTouchStart.bind(this))
-        this.options.el.addEventListener('touchmove',this.onTouchMove.bind(this))
-        this.options.el.addEventListener('touchend',this.onTouchEnd.bind(this))
+        this.options.el.addEventListener('touchstart',this._onTouchStart.bind(this))
+        this.options.el.addEventListener('touchmove',this._onTouchMove.bind(this))
+        this.options.el.addEventListener('touchend',this._onTouchEnd.bind(this))
 
         //添加鼠标事件
         this.options.el.addEventListener('mousedown',this._onTouchStart.bind(this))
