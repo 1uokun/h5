@@ -11,11 +11,11 @@
     <ul id="List">
         <li>
             <p>First thing</p>
-            <button>x</button>
+            <button>X</button>
         </li>
         <li>
             <p>The second thing</p>
-            <button>x</button>
+            <button>X</button>
         </li>
     </ul>
 </div>
@@ -52,7 +52,7 @@
 <script>
     ddH5.Page({
         onload:function(){
-            var a = List.children
+            var a = List.children;
             for(let i=0;i<a.length;i++){
                 a[i].style.opacity="1";
                 a[i].style.webkitTransform=`translate3d(0px, 0px, 0px)`;
@@ -60,18 +60,21 @@
             }
         }
     });
-    List.addEventListener('click',function(event){
-        var ev = event||window.event;
-        var target = ev.target||ev.srcElement;
-        if(target.nodeName.toLowerCase() == 'button'){
-            /**
-             * [get-child-node-index]
-             * (https://stackoverflow.com/questions/5913927/get-child-node-index)
-             * **/
-            var _index = Array.prototype.indexOf.call(target.parentNode.parentNode.children, target.parentNode);
-            less(_index)
-        }
-    });
+
+
+
+    // List.addEventListener('click',function(event){
+    //     var ev = event||window.event;
+    //     var target = ev.target||ev.srcElement;
+    //     if(target.nodeName.toLowerCase() == 'button'){
+    //         /**
+    //          * [get-child-node-index]
+    //          * (https://stackoverflow.com/questions/5913927/get-child-node-index)
+    //          * **/
+    //         var _index = Array.prototype.indexOf.call(target.parentNode.parentNode.children, target.parentNode);
+    //         less(_index)
+    //     }
+    // });
 
     Input.onkeypress = function(e){
         var keyCode = null;
@@ -94,7 +97,7 @@
         var li=document.createElement("li");
         li.innerHTML = `
             <p>${value}</p>
-            <button>x</button>
+            <button>X</button>
         `
         List.appendChild(li);
         setTimeout(function(){
@@ -108,6 +111,88 @@
         List.removeChild(List.children[index])
     }
 
+    var Controller = function(options){
+        this.view = options.view;
+        this.events = options.events;
+        options.events.initial.apply(this)
+        // for(let i in options.created){
+        //     options.created[i].apply(this)
+        // }
+        // for(let i in options.events){
+        //     options.events[i].bind(this)
+        // }
+    };
+    new Controller({
+        // model : new Model(),
+        view: List,
+        events:{
+            initial:function(){
+                console.log(this)
+                this.view.addEventListener('click',function(event){
+                    var ev = event||window.event;
+                    var target = ev.target||ev.srcElement;
+                    if(target.nodeName.toLowerCase() == 'button'){
+                        /**
+                         * [get-child-node-index]
+                         * (https://stackoverflow.com/questions/5913927/get-child-node-index)
+                         * **/
+                        var _index = Array.prototype.indexOf.call(target.parentNode.parentNode.children, target.parentNode);
+                        this.less(_index)
+                    }
+                }.bind(this));
+            },
+            add:function(value){
+                var li=document.createElement("li");
+                li.innerHTML = `
+                    <p>${value}</p>
+                    <button>X</button>
+                `
+                this.view.appendChild(li);
+                setTimeout(function(){
+                    li.style.webkitTransform=`translate3d(0px, 0px, 0px)`;
+                    li.style.transform=`translate3d(0px, 0px, 0px)`;
+                    li.style.opacity="1";
+                },0)
+            },
+            less:function(index){
+                console.log(this)
+                this.view.removeChild(this.view.children[index])
+            }
+        }
+    })
+
 </script>
+<!--MVC实现
+
+    Input/button 发送事件
+
+    List 响应事件
+
+    //响应Controller，发送给View
+    var Model = function(){}
+    Model.prototype.set=function(){}
+    Model.prototype.get=function(){}
+
+    var model1 = new Model()
+
+    //监听View的事件，发送给Model
+    var Controller = {
+
+        model:model1,
+
+        view:{
+
+        },
+
+        events:{
+
+        }
+    }
+
+
+    //data
+    listData=[]
+
+ -->
 </body>
 </html>
