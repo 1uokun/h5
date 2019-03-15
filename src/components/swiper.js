@@ -12,6 +12,7 @@ export default class Swiper extends Touch{
             _index: param.index||0,  //initial slide index
             last: 0, //record interval time
             el: param.el,
+            duration:param.duration||600    //transfrom-duration
         };
 
         this.loop=Boolean(param.loop);  //whether loop Swiper
@@ -123,7 +124,7 @@ export default class Swiper extends Touch{
         let opt = this.options;
         opt.x2 = coords.pageX;
         opt.y2 = coords.pageY;
-        opt.el.style.transitionDuration = '300ms';
+        opt.el.style.transitionDuration = opt.duration+'ms';
         opt.el.style.webkitTransform = `translate3d(-${opt.el.offsetWidth*opt._index}px, 0px, 0px)`;
         /**
          * @param TapTime
