@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>todo list mvc</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+</head>
+<body>
+<div class="wrapper">
+    <input type="text" id="Input">
+    <ul id="List">
+        <li>
+            <p>First thing</p>
+            <button>x</button>
+        </li>
+        <li>
+            <p>The second thing</p>
+            <button>x</button>
+        </li>
+    </ul>
+</div>
+<style>
+    .wrapper{
+        padding: 20px;
+        max-width: 300px;
+        margin:0 auto;
+        background-color: antiquewhite
+    }
+    #Input{
+        width:100%;
+    }
+
+    #List li{
+        -webkit-transition-property:all;
+        transition-property:all;
+        -webkit-transition-duration:300ms;
+        transition-duration:300ms;
+        -webkit-transform:translate3d(0px, -10px, 0px);
+        transform:translate3d(0px, -10px, 0px);
+        opacity: 0;
+    }
+
+    #List li p{
+        display: inline
+    }
+
+    #List li button{
+        float: right
+    }
+</style>
+<script type="text/javascript" src="../dingdingH5.js"></script>
+<script>
+    ddH5.Page({
+        onload:function(){
+            var a = List.children
+            for(let i=0;i<a.length;i++){
+                a[i].style.opacity="1";
+                a[i].style.webkitTransform=`translate3d(0px, 0px, 0px)`;
+                a[i].style.transform=`translate3d(0px, 0px, 0px)`;
+            }
+        }
+    });
+    List.addEventListener('click',function(event){
+        var ev = event||window.event;
+        var target = ev.target||ev.srcElement;
+        if(target.nodeName.toLowerCase() == 'button'){
+            /**
+             * [get-child-node-index]
+             * (https://stackoverflow.com/questions/5913927/get-child-node-index)
+             * **/
+            var _index = Array.prototype.indexOf.call(target.parentNode.parentNode.children, target.parentNode);
+            less(_index)
+        }
+    });
+
+    Input.onkeypress = function(e){
+        var keyCode = null;
+
+        if(e.which)
+            keyCode = e.which;
+        else if(e.keyCode)
+            keyCode = e.keyCode;
+
+        if(keyCode == 13) {
+            add(Input.value);
+            Input.value = null;
+            Input.blur();
+            return false;
+        }
+        return true;
+    };
+
+    function add(value){
+        var li=document.createElement("li");
+        li.innerHTML = `
+            <p>${value}</p>
+            <button>x</button>
+        `
+        List.appendChild(li);
+        setTimeout(function(){
+            li.style.webkitTransform=`translate3d(0px, 0px, 0px)`;
+            li.style.transform=`translate3d(0px, 0px, 0px)`;
+            li.style.opacity="1";
+        },0)
+    }
+
+    function less(index){
+        List.removeChild(List.children[index])
+    }
+
+</script>
+</body>
+</html>

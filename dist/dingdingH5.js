@@ -21,12 +21,11 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/
 /******/ 	// eslint-disable-next-line no-unused-vars
 /******/ 	function hotDownloadUpdateChunk(chunkId) {
-/******/ 		var head = document.getElementsByTagName("head")[0];
 /******/ 		var script = document.createElement("script");
 /******/ 		script.charset = "utf-8";
 /******/ 		script.src = __webpack_require__.p + "" + chunkId + "." + hotCurrentHash + ".hot-update.js";
-/******/ 		;
-/******/ 		head.appendChild(script);
+/******/ 		if (null) script.crossOrigin = null;
+/******/ 		document.head.appendChild(script);
 /******/ 	}
 /******/
 /******/ 	// eslint-disable-next-line no-unused-vars
@@ -74,7 +73,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/
 /******/ 	var hotApplyOnUpdate = true;
 /******/ 	// eslint-disable-next-line no-unused-vars
-/******/ 	var hotCurrentHash = "af908aa1fbfec0fa093d";
+/******/ 	var hotCurrentHash = "2af797d57969dab0d28d";
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule;
@@ -1130,15 +1129,14 @@ function () {
     key: "_onTouchStart",
     value: function _onTouchStart(e) {
       this.isMouseDown = true;
-      var coords = e.changedTouches ? e.changedTouches.item(0) : e;
+      var pageX = e.type === 'touchstart' ? e.targetTouches[0].pageX : e.pageX || e.clientX;
       /**
        * public this.onTouchStart
-       * @param {pageX,pageY} for Swiper
+       * @param {pageX} for Swiper
        * **/
 
       this.onTouchStart({
-        pageX: coords.pageX,
-        pageY: coords.pageY
+        pageX: pageX
       });
     }
   }, {
@@ -1149,8 +1147,11 @@ function () {
   }, {
     key: "_onTouchMove",
     value: function _onTouchMove(e) {
-      var coords = e.changedTouches ? e.changedTouches.item(0) : e;
-      this.isMouseDown && Object(_util__WEBPACK_IMPORTED_MODULE_0__["throttle"])(this.onTouchMove(coords));
+      e.comesFromScrollable = true;
+      var pageX = e.pageX || e.targetTouches[0].pageX;
+      this.isMouseDown && Object(_util__WEBPACK_IMPORTED_MODULE_0__["throttle"])(this.onTouchMove({
+        pageX: pageX
+      }));
     }
   }, {
     key: "onTouchMove",
@@ -1161,8 +1162,10 @@ function () {
     key: "_onTouchEnd",
     value: function _onTouchEnd(e) {
       this.isMouseDown = false;
-      var coords = e.changedTouches ? e.changedTouches.item(0) : e;
-      this.onTouchEnd(coords);
+      var pageX = e.pageX || e.changedTouches[0].pageX;
+      this.onTouchEnd({
+        pageX: pageX
+      });
     }
   }, {
     key: "onTouchEnd",
@@ -1172,9 +1175,20 @@ function () {
   }, {
     key: "bindEvent",
     value: function bindEvent() {
-      this.options.el.addEventListener('touchstart', this.onTouchStart.bind(this));
-      this.options.el.addEventListener('touchmove', this.onTouchMove.bind(this));
-      this.options.el.addEventListener('touchend', this.onTouchEnd.bind(this)); //添加鼠标事件
+      /**
+       * 阻止iOS touchmove默认事件
+       * solve by https://stackoverflow.com/questions/7756684/how-do-i-prevent-the-default-behavior-of-the-touchmove-event-in-ios-5
+       * **/
+      document.addEventListener('touchmove', function (event) {
+        if (!event.comesFromScrollable) {
+          event.preventDefault();
+        }
+      }, {
+        passive: false
+      });
+      this.options.el.addEventListener('touchstart', this._onTouchStart.bind(this));
+      this.options.el.addEventListener('touchmove', this._onTouchMove.bind(this));
+      this.options.el.addEventListener('touchend', this._onTouchEnd.bind(this)); //添加鼠标事件
 
       this.options.el.addEventListener('mousedown', this._onTouchStart.bind(this));
       this.options.el.addEventListener('mousemove', this._onTouchMove.bind(this));
@@ -1638,7 +1652,9 @@ function (_Touch) {
       //initial slide index
       last: 0,
       //record interval time
-      el: param.el
+      el: param.el,
+      duration: param.duration || 600 //transfrom-duration
+
     };
     _this.loop = Boolean(param.loop); //whether loop Swiper
 
@@ -1688,7 +1704,7 @@ function (_Touch) {
         if (_slides[i].classList.contains('swiper-slide-active')) {
           this.options._index = i;
           this.options.el.style.transitionDuration = '0ms';
-          this.options.el.style.webkitTransform = "translate3d(-".concat(this.options.el.offsetWidth * i, "px, 0px, 0px)");
+          this.updateTransform("translate3d(-".concat(this.options.el.offsetWidth * i, "px, 0px, 0px)"));
           break;
         }
       } //window onresize
@@ -1696,7 +1712,7 @@ function (_Touch) {
 
       window.onresize = Object(_base_util__WEBPACK_IMPORTED_MODULE_1__["throttle"])(function () {
         this.options.el.style.transitionDuration = '0ms';
-        this.options.el.style.webkitTransform = "translate3d(-".concat(this.options.el.offsetWidth * this.options._index, "px, 0px, 0px)");
+        this.updateTransform("translate3d(-".concat(this.options.el.offsetWidth * this.options._index, "px, 0px, 0px)"));
       }).bind(this);
     }
   }, {
@@ -1706,13 +1722,19 @@ function (_Touch) {
 
       if (direction === 'Left' && i < this.options.el.children.length - 1) {
         this.options._index += 1;
-        this.options.el.style.webkitTransform = "translate3d(-".concat(this.options.el.offsetWidth * (i + 1), "px, 0px, 0px)");
+        this.updateTransform("translate3d(-".concat(this.options.el.offsetWidth * (i + 1), "px, 0px, 0px)"));
       } else if (direction === 'Right' && i >= 1) {
         this.options._index -= 1;
-        this.options.el.style.webkitTransform = "translate3d(-".concat(this.options.el.offsetWidth * (i - 1), "px, 0px, 0px)");
+        this.updateTransform("translate3d(-".concat(this.options.el.offsetWidth * (i - 1), "px, 0px, 0px)"));
       } else {
-        this.options.el.style.webkitTransform = "translate3d(-".concat(this.options.el.offsetWidth * i, "px, 0px, 0px)");
+        this.updateTransform("translate3d(-".concat(this.options.el.offsetWidth * i, "px, 0px, 0px)"));
       }
+    }
+  }, {
+    key: "updateTransform",
+    value: function updateTransform(translate) {
+      this.options.el.style.webkitTransform = translate;
+      this.options.el.style.transform = translate;
     }
     /** listen slide active for example : dot
      *
@@ -1745,10 +1767,10 @@ function (_Touch) {
 
         if (opt._index === 0) {
           this.options._index = _len - 2;
-          this.options.el.style.webkitTransform = "translate3d(-".concat(this.options.el.offsetWidth * (_len - 1), "px, 0px, 0px)");
+          this.updateTransform("translate3d(-".concat(this.options.el.offsetWidth * (_len - 1), "px, 0px, 0px)"));
         } else if (opt._index === _len - 1) {
           this.options._index = 1;
-          this.options.el.style.webkitTransform = "translate3d(-".concat(this.options.el.offsetWidth * 1, "px, 0px, 0px)");
+          this.updateTransform("translate3d(-".concat(this.options.el.offsetWidth * 1, "px, 0px, 0px)"));
         }
       }
 
@@ -1763,7 +1785,7 @@ function (_Touch) {
       var opt = this.options;
       opt.x2 = coords.pageX;
       opt.y2 = coords.pageY;
-      opt.el.style.transitionDuration = '300ms';
+      opt.el.style.transitionDuration = opt.duration + 'ms';
       opt.el.style.webkitTransform = "translate3d(-".concat(opt.el.offsetWidth * opt._index, "px, 0px, 0px)");
       /**
        * @param TapTime
