@@ -5,6 +5,7 @@
  - 基于react-virtualized思想的虚拟长列表[x]
  - [基于Swiper.js思想的触摸版轮播](https://1uokun.github.io/h5/dist/components/swiper.html)
  - [脏值检测简单应用 - 表单提交](https://1uokun.github.io/h5/dist/components/dirty-checking.html)
+ - [MVVM 初探](https://1uokun.github.io/h5/dist/components/todolist.html)
 
 ## 面向开发者
 目前暂不支持古代浏览器

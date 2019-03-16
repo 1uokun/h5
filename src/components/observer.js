@@ -3,6 +3,7 @@ export default class Observer {
         this.clientList = {};
     }
 
+    //订阅
     listen(key,fn){
         if( !this.clientList[ key ] ) {
             this.clientList[key]=[]
@@ -10,6 +11,7 @@ export default class Observer {
         this.clientList[key].push(fn)
     }
 
+    //推送
     trigger(){
         //推模型
         let key = Array.prototype.shift.call( arguments ),
@@ -22,6 +24,7 @@ export default class Observer {
         }
     }
 
+    //取消订阅
     remove ( key, fn ) {
         let fns = this.clientList[key];
         if (!fns) {

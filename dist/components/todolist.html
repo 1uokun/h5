@@ -8,16 +8,7 @@
 <body>
 <div class="wrapper">
     <input type="text" id="Input">
-    <ul id="List">
-        <li>
-            <p>First thing</p>
-            <button>X</button>
-        </li>
-        <li>
-            <p>The second thing</p>
-            <button>X</button>
-        </li>
-    </ul>
+    <ul id="List"></ul>
 </div>
 <style>
     .wrapper{
@@ -50,84 +41,76 @@
 </style>
 <script type="text/javascript" src="../dingdingH5.js"></script>
 <script>
-    ddH5.Page({
-        onload:function(){
-            var a = List.children;
-            for(let i=0;i<a.length;i++){
-                a[i].style.opacity="1";
-                a[i].style.webkitTransform=`translate3d(0px, 0px, 0px)`;
-                a[i].style.transform=`translate3d(0px, 0px, 0px)`;
+    const observer = ddH5.Observer();
+    const App = function(options){
+        this.view = options.view;
+        this.model = options.model;
+        for(let i in options.create){
+            options.create[i].apply(this)
+        }
+    };
+    const ViewModel = function(options){
+        for(let i in options.events){
+            observer.listen(i,options.events[i]);
+        }
+    };
+    new ViewModel({
+        events: {
+            ADD_TODO_LIST: function ({value:value}) {
+                var li = document.createElement("li");
+                li.innerHTML = `
+                    <p>${value}</p>
+                    <button>X</button>
+                `
+                List.appendChild(li);
+                setTimeout(function () {
+                    li.style.webkitTransform = `translate3d(0px, 0px, 0px)`;
+                    li.style.transform = `translate3d(0px, 0px, 0px)`;
+                    li.style.opacity = "1";
+                }, 0)
+            },
+            LESS_TODO_LIST: function ({index:index}) {
+                List.removeChild(List.children[index])
             }
         }
     });
+    new App({
+        view:Input,
+        create:{
+            onkeypress : function(){
+                this.view.onkeypress=function(e){
+                    var keyCode = null;
 
+                    if(e.which)
+                        keyCode = e.which;
+                    else if(e.keyCode)
+                        keyCode = e.keyCode;
 
-
-    // List.addEventListener('click',function(event){
-    //     var ev = event||window.event;
-    //     var target = ev.target||ev.srcElement;
-    //     if(target.nodeName.toLowerCase() == 'button'){
-    //         /**
-    //          * [get-child-node-index]
-    //          * (https://stackoverflow.com/questions/5913927/get-child-node-index)
-    //          * **/
-    //         var _index = Array.prototype.indexOf.call(target.parentNode.parentNode.children, target.parentNode);
-    //         less(_index)
-    //     }
-    // });
-
-    Input.onkeypress = function(e){
-        var keyCode = null;
-
-        if(e.which)
-            keyCode = e.which;
-        else if(e.keyCode)
-            keyCode = e.keyCode;
-
-        if(keyCode == 13) {
-            add(Input.value);
-            Input.value = null;
-            Input.blur();
-            return false;
+                    if(keyCode == 13) {
+                        //发送事件
+                        observer.trigger('ADD_TODO_LIST',{value:this.view.value});
+                        this.view.value = null;
+                        this.view.blur();
+                        return false;
+                    }
+                    return true;
+                }.bind(this)
+            }
         }
-        return true;
-    };
-
-    function add(value){
-        var li=document.createElement("li");
-        li.innerHTML = `
-            <p>${value}</p>
-            <button>X</button>
-        `
-        List.appendChild(li);
-        setTimeout(function(){
-            li.style.webkitTransform=`translate3d(0px, 0px, 0px)`;
-            li.style.transform=`translate3d(0px, 0px, 0px)`;
-            li.style.opacity="1";
-        },0)
-    }
-
-    function less(index){
-        List.removeChild(List.children[index])
-    }
-
-    var Controller = function(options){
-        this.view = options.view;
-        this.events = options.events;
-        options.events.initial.apply(this)
-        // for(let i in options.created){
-        //     options.created[i].apply(this)
-        // }
-        // for(let i in options.events){
-        //     options.events[i].bind(this)
-        // }
-    };
-    new Controller({
-        // model : new Model(),
+    });
+    new App({
         view: List,
-        events:{
-            initial:function(){
-                console.log(this)
+        model:{
+            todoList:["First thing","The second thing"]
+        },
+        create:{
+            onload:function(){
+                this.model.todoList.forEach(item=>{
+                    //发送事件
+                    observer.trigger('ADD_TODO_LIST',{value:item});
+                })
+            },
+            onClick:function(){
                 this.view.addEventListener('click',function(event){
                     var ev = event||window.event;
                     var target = ev.target||ev.srcElement;
@@ -137,62 +120,15 @@
                          * (https://stackoverflow.com/questions/5913927/get-child-node-index)
                          * **/
                         var _index = Array.prototype.indexOf.call(target.parentNode.parentNode.children, target.parentNode);
-                        this.less(_index)
+                        //发送事件
+                        observer.trigger('LESS_TODO_LIST',{index:_index});
+
                     }
-                }.bind(this));
+                });
             },
-            add:function(value){
-                var li=document.createElement("li");
-                li.innerHTML = `
-                    <p>${value}</p>
-                    <button>X</button>
-                `
-                this.view.appendChild(li);
-                setTimeout(function(){
-                    li.style.webkitTransform=`translate3d(0px, 0px, 0px)`;
-                    li.style.transform=`translate3d(0px, 0px, 0px)`;
-                    li.style.opacity="1";
-                },0)
-            },
-            less:function(index){
-                console.log(this)
-                this.view.removeChild(this.view.children[index])
-            }
         }
     })
 
 </script>
-<!--MVC实现
-
-    Input/button 发送事件
-
-    List 响应事件
-
-    //响应Controller，发送给View
-    var Model = function(){}
-    Model.prototype.set=function(){}
-    Model.prototype.get=function(){}
-
-    var model1 = new Model()
-
-    //监听View的事件，发送给Model
-    var Controller = {
-
-        model:model1,
-
-        view:{
-
-        },
-
-        events:{
-
-        }
-    }
-
-
-    //data
-    listData=[]
-
- -->
 </body>
 </html>
