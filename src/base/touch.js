@@ -54,7 +54,8 @@ export default class Touch {
 
 
     _onTouchMove(e){
-        e.comesFromScrollable = true;
+        e.preventDefault();
+        // e.comesFromScrollable = true;
         let pageX = e.pageX||e.targetTouches[0].pageX;
         this.isMouseDown&&throttle(this.onTouchMove({pageX:pageX}));
     }
@@ -78,9 +79,9 @@ export default class Touch {
          * solve by https://stackoverflow.com/questions/7756684/how-do-i-prevent-the-default-behavior-of-the-touchmove-event-in-ios-5
          * **/
         document.addEventListener('touchmove',(event)=>{
-            if (!event.comesFromScrollable){
-                event.preventDefault();
-            }
+            // if (!event.comesFromScrollable){
+            //     event.preventDefault();
+            // }
         },{passive: false});
 
         this.options.el.addEventListener('touchstart',this._onTouchStart.bind(this))

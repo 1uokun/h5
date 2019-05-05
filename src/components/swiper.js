@@ -58,10 +58,10 @@ export default class Swiper extends Touch{
             }
         }
         //window onresize
-        window.onresize=throttle(function(){
+        window.addEventListener('resize',throttle(function(){
             this.options.el.style.transitionDuration = '0ms';
             this.updateTransform(`translate3d(-${this.options.el.offsetWidth * this.options._index}px, 0px, 0px)`)
-        }).bind(this)
+        }).bind(this))
     }
 
     swiperRender(i){

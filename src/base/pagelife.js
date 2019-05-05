@@ -19,10 +19,10 @@ export default class Pagelife {
     bindEvent(){
         let self = this.options;
         document.addEventListener('DOMContentLoaded', this.DOMContentLoaded.bind(this))
-        window.onload = function(){
+        window.addEventListener('load',function(){
             self.defaultLoading&&this.cleanLoading(self.el);
             this.onload()
-        }.bind(this);
+        }.bind(this))
 
         this.options.defaultLoading&&this.defaultLoading()
     }

@@ -28,6 +28,22 @@ let debounce = function(func,wait){
     }
 };
 
+Function.prototype.before = function( beforefn ) {
+    var __self = this;
+    return function () {
+        beforefn.apply(this, arguments);
+        return __self.apply(this, arguments);
+    }
+}
+Function.prototype.after = function( afterfn ){
+    var __self = this;
+    return function(){
+        var ret = __self.apply( this, arguments );
+        afterfn.apply( this, arguments );
+        return ret;
+    }
+};
+
 module.exports = {
     throttle,
     debounce

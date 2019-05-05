@@ -14,6 +14,7 @@ module.exports = {
         contentBase: __dirname+'/dist',
         compress: false,
         port: 9000,
+        host: '0.0.0.0',
         hot: true
     },
 

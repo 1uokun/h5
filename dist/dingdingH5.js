@@ -73,7 +73,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/
 /******/ 	var hotApplyOnUpdate = true;
 /******/ 	// eslint-disable-next-line no-unused-vars
-/******/ 	var hotCurrentHash = "f5140e7edefb894ad6ab";
+/******/ 	var hotCurrentHash = "6aadddc3106dde4c0fc2";
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule;
@@ -849,12 +849,10 @@ function () {
     value: function bindEvent() {
       var self = this.options;
       document.addEventListener('DOMContentLoaded', this.DOMContentLoaded.bind(this));
-
-      window.onload = function () {
+      window.addEventListener('load', function () {
         self.defaultLoading && this.cleanLoading(self.el);
         this.onload();
-      }.bind(this);
-
+      }.bind(this));
       this.options.defaultLoading && this.defaultLoading();
     } //默认一个加载样式
 
@@ -1147,7 +1145,8 @@ function () {
   }, {
     key: "_onTouchMove",
     value: function _onTouchMove(e) {
-      e.comesFromScrollable = true;
+      e.preventDefault(); // e.comesFromScrollable = true;
+
       var pageX = e.pageX || e.targetTouches[0].pageX;
       this.isMouseDown && Object(_util__WEBPACK_IMPORTED_MODULE_0__["throttle"])(this.onTouchMove({
         pageX: pageX
@@ -1179,10 +1178,9 @@ function () {
        * 阻止iOS touchmove默认事件
        * solve by https://stackoverflow.com/questions/7756684/how-do-i-prevent-the-default-behavior-of-the-touchmove-event-in-ios-5
        * **/
-      document.addEventListener('touchmove', function (event) {
-        if (!event.comesFromScrollable) {
-          event.preventDefault();
-        }
+      document.addEventListener('touchmove', function (event) {// if (!event.comesFromScrollable){
+        //     event.preventDefault();
+        // }
       }, {
         passive: false
       });
@@ -1238,6 +1236,26 @@ var debounce = function debounce(func, wait) {
     timeout = setTimeout(function () {
       func.apply(context, args);
     }, wait);
+  };
+};
+
+Function.prototype.before = function (beforefn) {
+  var __self = this;
+
+  return function () {
+    beforefn.apply(this, arguments);
+    return __self.apply(this, arguments);
+  };
+};
+
+Function.prototype.after = function (afterfn) {
+  var __self = this;
+
+  return function () {
+    var ret = __self.apply(this, arguments);
+
+    afterfn.apply(this, arguments);
+    return ret;
   };
 };
 
@@ -1792,10 +1810,10 @@ function (_Touch) {
       } //window onresize
 
 
-      window.onresize = Object(_base_util__WEBPACK_IMPORTED_MODULE_1__["throttle"])(function () {
+      window.addEventListener('resize', Object(_base_util__WEBPACK_IMPORTED_MODULE_1__["throttle"])(function () {
         this.options.el.style.transitionDuration = '0ms';
         this.updateTransform("translate3d(-".concat(this.options.el.offsetWidth * this.options._index, "px, 0px, 0px)"));
-      }).bind(this);
+      }).bind(this));
     }
   }, {
     key: "swiperRender",
