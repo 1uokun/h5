@@ -73,7 +73,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/
 /******/ 	var hotApplyOnUpdate = true;
 /******/ 	// eslint-disable-next-line no-unused-vars
-/******/ 	var hotCurrentHash = "6aadddc3106dde4c0fc2";
+/******/ 	var hotCurrentHash = "446a316457fae668d40a";
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule;
@@ -1145,8 +1145,8 @@ function () {
   }, {
     key: "_onTouchMove",
     value: function _onTouchMove(e) {
-      e.preventDefault(); // e.comesFromScrollable = true;
-
+      // e.preventDefault();
+      e.comesFromScrollable = true;
       var pageX = e.pageX || e.targetTouches[0].pageX;
       this.isMouseDown && Object(_util__WEBPACK_IMPORTED_MODULE_0__["throttle"])(this.onTouchMove({
         pageX: pageX
@@ -1178,9 +1178,10 @@ function () {
        * 阻止iOS touchmove默认事件
        * solve by https://stackoverflow.com/questions/7756684/how-do-i-prevent-the-default-behavior-of-the-touchmove-event-in-ios-5
        * **/
-      document.addEventListener('touchmove', function (event) {// if (!event.comesFromScrollable){
-        //     event.preventDefault();
-        // }
+      document.addEventListener('touchmove', function (event) {
+        if (event.comesFromScrollable) {
+          event.preventDefault();
+        }
       }, {
         passive: false
       });
