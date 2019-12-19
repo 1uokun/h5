@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>clusterize</title>
+    <title>normal-list</title>
     <link rel="stylesheet" href="../styles.css">
 </head>
 <style>
@@ -15,7 +15,7 @@
 <script type="text/javascript" src="../dingdingH5.js"></script>
 <div class="clusterize">
     <div style="background: #F8F8F8;margin-bottom: 10px">
-        <input type="text" id="rows" onchange="onRowsChange(this.id)">
+        <input type="text" value="50000" id="rows" onchange="onRowsChange(this.id)">
         <input type="button" value="refresh">
     </div>
     <div id="scrollArea" class="clusterize-scroll">
@@ -26,25 +26,7 @@
     </div>
 </div>
 <script>
-    var aRows1 = [];
-    for (var i=1; i<document.getElementById("rows").value+1; ++i) {
-        aRows1.push(i);
-    }
-    var clusterize =  ddH5.Clusterize({
-        data:aRows1,
-        renderItem:function(item,i){
-            return `<tr style="height:50px;" key="${i}">
-                        <td>
-                            <div style="height:50px;width: ${item*100/aRows1.length}%;background-color: pink">${item};</div>
-                        </td>
-                    </tr>`
-        },
-        content_elem:document.getElementById('contentArea'),
-        content_height:500,
-        scroll_elem:document.getElementById('scrollArea'),
-        defaultLoading:true
-    });
-
+    let aRows1 = document.getElementById("rows").value
 
     function onRowsChange(x){
         var y=document.getElementById(x).value;
@@ -53,10 +35,25 @@
             for (var i=1; i<Number(y)+1; ++i) {
                 aRows1.push(i);
             }
-            clusterize.options.data = aRows1;
-            clusterize.onload();
+
         }
     }
+
+    function item(i){
+        let item = document.createElement('tr');
+        item.height = 20;
+        item.innerHTML = `
+                        <td>
+                            <div style="height:${item.height}px;width: ${i*100/aRows1}%;background-color: pink">${i};</div>
+                        </td>
+                   `;
+        return item
+    }
+
+    for(var i=0;i<aRows1;i++){
+        document.getElementById("contentArea").appendChild(item(i));
+    }
+
 </script>
 </body>
 </html>

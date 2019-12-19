@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>pull-add</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<style>
+    html,body{
+        margin:0;
+        padding:0;
+    }
+</style>
+<body>
+<script type="text/javascript" src="../dingdingH5.js"></script>
+<div class="clusterize">
+    <div style="background: #F8F8F8;margin-bottom: 10px">
+        <input type="text" value="500000" id="rows" onchange="onRowsChange(this.id)">
+        <input type="button" value="refresh">
+    </div>
+    <div id="scrollArea" class="clusterize-scroll">
+        <table>
+            <tbody id="contentArea" class="clusterize-content">
+            </tbody>
+        </table>
+    </div>
+</div>
+<script>
+    let aRows1 = document.getElementById("rows").value,
+        rows = 200, index = 0;
+
+    function onRowsChange(x){
+        var y=document.getElementById(x).value;
+        if(Number(y)>0){
+            aRows1 = [];
+            for (var i=1; i<Number(y)+1; ++i) {
+                aRows1.push(i);
+            }
+
+        }
+    }
+
+    function item(i){
+        let item = document.createElement('tr');
+        item.height = 20;
+        item.innerHTML = `
+                        <td>
+                            <div style="height:${item.height}px;width: ${i*100/aRows1}%;background-color: pink">${i};</div>
+                        </td>
+                   `;
+        return item
+    }
+
+    for(var i=0;i<rows;i++){
+        document.getElementById("contentArea").appendChild(item(i));
+    }
+
+    ddH5.Scroll({
+        scroll_elem:document.getElementById('scrollArea'),
+        offset:[500,0,0,0],
+        scrollToBottom:function(){
+            index += 1;
+            if(aRows1>rows*index){
+                for(var i=0;i<rows;i++){
+                    document.getElementById("contentArea").appendChild(item(rows*index+i));
+                }
+            }
+
+        },
+    })
+
+</script>
+</body>
+</html>
